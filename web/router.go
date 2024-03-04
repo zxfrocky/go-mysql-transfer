@@ -30,7 +30,8 @@ func Start() error {
 	//statics := "D:\\statics"
 	//index := "D:\\statics\\index.html"
 
-	statics := "statics"
+	//statics := "statics"
+	statics := "web"
 	index := path.Join(statics, "index.html")
 	g.Static("/statics", statics)
 	g.LoadHTMLFiles(index)

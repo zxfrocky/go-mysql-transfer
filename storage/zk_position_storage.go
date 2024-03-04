@@ -20,7 +20,7 @@ package storage
 import (
 	"encoding/json"
 
-	"github.com/siddontang/go-mysql/mysql"
+	"github.com/go-mysql-org/go-mysql/mysql"
 
 	"go-mysql-transfer/global"
 	"go-mysql-transfer/util/zookeepers"

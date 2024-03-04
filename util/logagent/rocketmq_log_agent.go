@@ -82,3 +82,12 @@ func (s *RocketmqLoggerAgent) Error(msg string, fields map[string]interface{}) {
 func (s *RocketmqLoggerAgent) Fatal(msg string, fields map[string]interface{}) {
 	s.Error(msg, fields)
 }
+
+func (s *RocketmqLoggerAgent) Level(level string) {
+	logs.Infof(level, level)
+}
+
+func (s *RocketmqLoggerAgent) OutputPath(path string) (err error) {
+	logs.Infof("path:%v", path)
+	return nil
+}

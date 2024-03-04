@@ -18,8 +18,8 @@
 package storage
 
 import (
+	"github.com/go-mysql-org/go-mysql/mysql"
 	"github.com/juju/errors"
-	"github.com/siddontang/go-mysql/mysql"
 	"github.com/vmihailenco/msgpack"
 	"go.etcd.io/bbolt"
 )

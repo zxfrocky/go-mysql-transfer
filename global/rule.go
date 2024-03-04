@@ -25,7 +25,7 @@ import (
 	"text/template"
 
 	"github.com/juju/errors"
-	"github.com/siddontang/go-mysql/schema"
+	"github.com/go-mysql-org/go-mysql/schema"
 	"github.com/vmihailenco/msgpack"
 	"github.com/yuin/gopher-lua"
 	"github.com/yuin/gopher-lua/parse"

@@ -21,7 +21,7 @@ import (
 	"log"
 
 	"github.com/pingcap/errors"
-	"github.com/siddontang/go-mysql/mysql"
+	"github.com/go-mysql-org/go-mysql/mysql"
 
 	"go-mysql-transfer/global"
 	"go-mysql-transfer/metrics"

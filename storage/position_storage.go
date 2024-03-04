@@ -18,7 +18,7 @@
 package storage
 
 import (
-	"github.com/siddontang/go-mysql/mysql"
+	"github.com/go-mysql-org/go-mysql/mysql"
 
 	"go-mysql-transfer/global"
 )

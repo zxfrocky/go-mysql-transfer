@@ -18,12 +18,12 @@
 package endpoint
 
 import (
-	"github.com/siddontang/go-mysql/canal"
+	"github.com/go-mysql-org/go-mysql/canal"
 	"log"
 	"strconv"
 
 	"github.com/juju/errors"
-	"github.com/siddontang/go-mysql/mysql"
+	"github.com/go-mysql-org/go-mysql/mysql"
 	"github.com/streadway/amqp"
 
 	"go-mysql-transfer/global"

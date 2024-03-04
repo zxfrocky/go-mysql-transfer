@@ -22,7 +22,7 @@ import (
 	"sync"
 
 	luaJson "github.com/layeh/gopher-json"
-	"github.com/siddontang/go-mysql/canal"
+	"github.com/go-mysql-org/go-mysql/canal"
 	"github.com/yuin/gopher-lua"
 
 	"go-mysql-transfer/util/byteutil"

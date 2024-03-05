@@ -235,13 +235,13 @@ func (s *RocketEndpoint) buildMessage(req *model.RowRequest, rule *global.Rule) 
 	resp.Action = req.Action
 	resp.Timestamp = req.Timestamp
 	if rule.ValueEncoder == global.ValEncoderJson {
-		resp.Date = kvm
+		resp.Data = kvm
 	} else {
-		resp.Date = encodeValue(rule, kvm)
+		resp.Data = encodeValue(rule, kvm)
 	}
 
 	if rule.ReserveRawData && canal.UpdateAction == req.Action {
-		resp.Raw = oldRowMap(req, rule, false)
+		resp.Old = oldRowMap(req, rule, false)
 	}
 
 	body, err := json.Marshal(resp)

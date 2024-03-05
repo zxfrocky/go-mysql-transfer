@@ -24,8 +24,8 @@ import (
 	"sync"
 
 	"github.com/IBM/sarama"
-	"github.com/juju/errors"
 	"github.com/go-mysql-org/go-mysql/mysql"
+	"github.com/juju/errors"
 
 	"go-mysql-transfer/global"
 	"go-mysql-transfer/metrics"
@@ -208,13 +208,13 @@ func (s *KafkaEndpoint) buildMessage(row *model.RowRequest, rule *global.Rule) (
 	resp.Action = row.Action
 	resp.Timestamp = row.Timestamp
 	if rule.ValueEncoder == global.ValEncoderJson {
-		resp.Date = kvm
+		resp.Data = kvm
 	} else {
-		resp.Date = encodeValue(rule, kvm)
+		resp.Data = encodeValue(rule, kvm)
 	}
 
 	if rule.ReserveRawData && canal.UpdateAction == row.Action {
-		resp.Raw = oldRowMap(row, rule, false)
+		resp.Old = oldRowMap(row, rule, false)
 	}
 
 	body, err := json.Marshal(resp)

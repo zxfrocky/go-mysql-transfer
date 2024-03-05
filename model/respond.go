@@ -30,8 +30,8 @@ type MQRespond struct {
 	Topic     string      `json:"-"`
 	Action    string      `json:"action"`
 	Timestamp uint32      `json:"timestamp"`
-	Raw       interface{} `json:"raw,omitempty"`
-	Date      interface{} `json:"date"`
+	Old       interface{} `json:"old,omitempty"`
+	Data      interface{} `json:"data"`
 	ByteArray []byte      `json:"-"`
 }
 

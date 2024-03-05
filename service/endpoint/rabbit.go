@@ -22,8 +22,8 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/juju/errors"
 	"github.com/go-mysql-org/go-mysql/mysql"
+	"github.com/juju/errors"
 	"github.com/streadway/amqp"
 
 	"go-mysql-transfer/global"
@@ -198,13 +198,13 @@ func (s *RabbitEndpoint) doRuleConsume(req *model.RowRequest, rule *global.Rule)
 	resp.Action = req.Action
 	resp.Timestamp = req.Timestamp
 	if rule.ValueEncoder == global.ValEncoderJson {
-		resp.Date = kvm
+		resp.Data = kvm
 	} else {
-		resp.Date = encodeValue(rule, kvm)
+		resp.Data = encodeValue(rule, kvm)
 	}
 
 	if rule.ReserveRawData && canal.UpdateAction == req.Action {
-		resp.Raw = oldRowMap(req, rule, false)
+		resp.Old = oldRowMap(req, rule, false)
 	}
 
 	body, err := json.Marshal(resp)

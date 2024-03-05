@@ -133,4 +133,4 @@ rule:
     #rabbitmq相关
     #rabbitmq_queue: user_topic #queue名称,可以为空，默认使用表(Table)名称
 
-    #reserve_raw_data: true #保留update之前的数据，针对rocketmq、kafka、rabbitmq有用;默认为false
+    reserve_raw_data: true #保留update之前的数据，针对rocketmq、kafka、rabbitmq有用;默认为false

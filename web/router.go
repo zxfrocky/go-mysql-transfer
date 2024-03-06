@@ -35,7 +35,7 @@ func Start() error {
 	index := path.Join(statics, "index.html")
 	g.Static("/statics", statics)
 	g.LoadHTMLFiles(index)
-	g.GET("/aa", webAdminFunc)
+	g.GET("/", webAdminFunc)
 
 	port := global.Cfg().WebAdminPort
 	listen := fmt.Sprintf(":%s", strconv.Itoa(port))

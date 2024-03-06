@@ -7,6 +7,7 @@ import (
 	"go-mysql-transfer/util/nets"
 	"log"
 	"net/http"
+	"path"
 	"strconv"
 	"time"
 
@@ -30,10 +31,10 @@ func Start() error {
 	//index := "D:\\statics\\index.html"
 
 	//statics := "statics"
-	//statics := "web/statics"
-	//index := path.Join(statics, "index.html")
-	//g.Static("/statics", statics)
-	//g.LoadHTMLFiles(index)
+	statics := "web/statics"
+	index := path.Join(statics, "index.html")
+	g.Static("/statics", statics)
+	g.LoadHTMLFiles(index)
 	g.GET("/", webAdminFunc)
 
 	port := global.Cfg().WebAdminPort

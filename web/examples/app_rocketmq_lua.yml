@@ -1,0 +1,47 @@
+# mysql配置
+addr: 127.0.0.1:3306
+user: root
+pass: root
+charset : utf8
+slave_id: 1001 #slave ID
+flavor: mysql #mysql or mariadb,默认mysql
+
+#系统相关配置
+#data_dir: D:\\transfer #应用产生的数据存放地址，包括日志、缓存数据等，默认当前运行目录下store文件夹
+#logger:
+#  level: info #日志级别；支持：debug|info|warn|error，默认info
+
+#prometheus相关配置
+#enable_exporter: true #是否启用prometheus exporter，默认false
+#exporter_addr: 9595 #prometheus exporter端口，默认9595
+
+#cluster: # 集群相关配置
+  #name: myTransfer #集群名称，具有相同name的节点放入同一个集群
+  #bind_ip: 127.0.0.1 # 绑定的IP,如果机器有多张网卡(包含虚拟网卡)会有多个IP，使用这个属性绑定一个
+  #ZooKeeper地址，多个用逗号风格
+  #zk_addrs: 192.168.1.10:2181,192.168.1.11:2182,192.168.1.12:2183
+  #zk_authentication: 123456 #digest类型的访问秘钥，如：user:password，默认为空
+  #etcd_addrs: 127.0.0.1:2379 #etcd连接地址，多个用逗号分隔
+  #etcd_user: test #etcd用户名
+  #etcd_password: 123456 #etcd密码
+
+
+#目标类型
+target: rocketmq # 支持redis、mongodb、elasticsearch、rocketmq、kafka、rabbitmq
+
+#rocketmq连接配置
+rocketmq_name_servers: 127.0.0.1:9876 #rocketmq命名服务地址，多个用逗号分隔
+#rocketmq_group_name: transfer_test_group #rocketmq group name,默认为空
+#rocketmq_instance_name: transfer_test_group_ins #rocketmq instance name,默认为空
+#rocketmq_access_key: RocketMQ #访问控制 accessKey,默认为空
+#rocketmq_secret_key: 12345678 #访问控制 secretKey,默认为空
+
+#规则配置  
+rule:
+  -
+    schema: eseap #数据库名称
+    table: t_user #表名称
+    #order_by_column: id #排序字段，存量数据同步时不能为空
+    lua_file_path: lua/t_user_rocket.lua   #lua脚本文件
+    #lua_script:   #lua 脚本
+    

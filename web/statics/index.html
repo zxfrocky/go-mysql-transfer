@@ -1,5 +1,14 @@
+
+{{if .isRedirect}}
+
+<script language="javascript" type="text/javascript">
+    window.location.href="http://{{.leader}}";
+</script>
+
+{{else}}
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>go-mysql-transfer</title>
@@ -10,59 +19,415 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
-    <link rel="icon" href="images/favicon.ico">
-    <link rel="stylesheet" href="lib/layui-v2.5.5/css/layui.css" media="all">
-    <link rel="stylesheet" href="lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
-    <link rel="stylesheet" href="css/layuimini.css?v=2.0.1" media="all">
-    <link rel="stylesheet" href="css/themes/default.css" media="all">
-    <link rel="stylesheet" href="css/public.css" media="all">
+    <link rel="stylesheet" href="statics/lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="statics/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+    <link rel="stylesheet" href="statics/css/layuimini.css?v=2.0.1" media="all">
+    <link rel="stylesheet" href="statics/css/themes/default.css" media="all">
+    <link rel="stylesheet" href="statics/css/public.css" media="all">
     <!--[if lt IE 9]>
     <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
     <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <style id="layuimini-bg-color">
+    <style>
+        .welcome .layui-card {
+            border: 1px solid #f2f2f2;
+            border-radius: 5px;
+        }
+
+        .welcome .icon {
+            margin-right: 10px;
+            color: #1aa094;
+        }
+
+        .welcome .icon-cray {
+            color: #ffb800 !important;
+        }
+
+        .welcome .icon-blue {
+            color: #1e9fff !important;
+        }
+
+        .welcome .icon-tip {
+            color: #ff5722 !important;
+        }
+
+        .welcome .layuimini-qiuck-module {
+            text-align: center;
+            margin-top: 10px
+        }
+
+        .welcome .layuimini-qiuck-module a i {
+            display: inline-block;
+            width: 100%;
+            height: 60px;
+            line-height: 60px;
+            text-align: center;
+            border-radius: 2px;
+            font-size: 30px;
+            background-color: #F8F8F8;
+            color: #333;
+            transition: all .3s;
+            -webkit-transition: all .3s;
+        }
+
+        .welcome .layuimini-qiuck-module a cite {
+            position: relative;
+            top: 2px;
+            display: block;
+            color: #666;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+
+        .welcome .welcome-module {
+            width: 100%;
+            height: 310px;
+        }
+
+        .welcome .panel {
+            background-color: #fff;
+            border: 1px solid transparent;
+            border-radius: 3px;
+            -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+            box-shadow: 0 1px 1px rgba(0, 0, 0, .05)
+        }
+
+        .welcome .panel-body {
+            padding: 5px
+        }
+
+        .welcome .panel-title {
+            margin-top: 0;
+            margin-bottom: 0;
+            font-size: 12px;
+            color: inherit
+        }
+
+        .welcome .label {
+            display: inline;
+            padding: .2em .6em .3em;
+            font-size: 75%;
+            font-weight: 700;
+            line-height: 1;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: .25em;
+            margin-top: .3em;
+        }
+
+        .welcome .layui-red {
+            color: red
+        }
+
+        .welcome .main_btn>p {
+            height: 40px;
+        }
+
+        .welcome .layui-bg-number {
+            background-color: #F8F8F8;
+        }
+
+        .welcome .layuimini-notice:hover {
+            background: #f6f6f6;
+        }
+
+        .welcome .layuimini-notice {
+            padding: 7px 16px;
+            clear: both;
+            font-size: 12px !important;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.2s ease-in-out;
+        }
+
+        .welcome .layuimini-notice-title,
+        .layuimini-notice-label {
+            padding-right: 70px !important;
+            text-overflow: ellipsis !important;
+            overflow: hidden !important;
+            white-space: nowrap !important;
+        }
+
+        .welcome .layuimini-notice-title {
+            line-height: 28px;
+            font-size: 14px;
+        }
+
+        .welcome .layuimini-notice-extra {
+            position: absolute;
+            top: 50%;
+            margin-top: -8px;
+            right: 16px;
+            display: inline-block;
+            height: 16px;
+            color: #999;
+        }
     </style>
 </head>
 
-<div class="layuimini-content-page"></div>
+<div class="layuimini-content-page">
 
-<script src="lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
-<script src="js/lay-config.js?v=2.0.0" charset="utf-8"></script>
+    <div class="layuimini-container layuimini-page-anim">
+        <div class="layuimini-main welcome">
+            <div class="layui-row layui-col-space15">
+
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header"><i class="fa fa-warning icon"></i>系统状况</div>
+                        <div class="layui-card-body">
+                            <div class="welcome-module">
+                                <div class="layui-row layui-col-space10">
+
+                                    <div class="layui-col-xs4">
+                                        <div class="panel layui-bg-number">
+                                            <div class="panel-body">
+                                                <div class="panel-title">
+                                                    <h3 class="no-margins">MySQL</h3>
+                                                </div>
+                                                <div class="panel-content">
+                                                    <div style="font-size: 12px;">Position: {{.binName}} {{.binPos}}</div>
+                                                    <div style="font-size: 12px;">地址：{{.mysql}}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-col-xs8">
+                                        <div class="panel layui-bg-number">
+                                            <div class="panel-body">
+                                                <div class="panel-title">
+                                                    <h3 class="no-margins">{{.destName}}</h3>
+                                                </div>
+                                                <div class="panel-content">
+                                                    <div style="font-size: 12px;">状态：
+                                                        {{if .destState}} 
+                                                            <span class="label layui-bg-green">正常</span>  
+                                                        {{else}}  
+                                                            <span class="label layui-bg-red">异常</span>
+                                                        {{end}}
+                                                    </div>
+                                                    <div style="font-size: 12px;">地址：{{.destAddr}}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-col-xs4">
+                                        <div class="panel layui-bg-number">
+                                            <div class="panel-body">
+                                                <div class="panel-title">
+                                                    <h5>应用启动时间</h5>
+                                                </div>
+                                                <div class="panel-content">
+                                                    <h2 class="no-margins">{{.bootTime}}</h2>
+                                                    <small>&nbsp;</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-col-xs8">
+                                        <div class="panel layui-bg-number">
+                                            <div class="panel-body">
+                                                {{if .isCluster}}
+                                                <div class="panel-content">
+                                                    <small>应用部署模式：集群
+                                                    <br>
+                                                    {{if .isZk}}
+                                                        zk地址：{{.zkAddrs}}
+                                                    {{else}}
+                                                        etcd地址：{{.etcdAddrs}}
+                                                    {{end}}
+                                                    <br>节点：<span style="color: green;">{{.leader}}</span>  {{range .followers}}&nbsp;&nbsp;&nbsp;&nbsp;{{.}}{{end}}
+                                                </small>
+                                                </div>
+                                                {{else}}
+                                                <div class="panel-title">
+                                                    <h5>应用部署模式</h5>
+                                                </div>
+                                                <div class="panel-content">
+                                                    <h2 class="no-margins">单机</h2>
+                                                    <small>&nbsp;</small>
+                                                </div>
+                                                {{end}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-col-xs4">
+                                        <div class="panel layui-bg-number">
+                                            <div class="panel-body">
+                                                <div class="panel-title">
+                                                    <h5>响应Insert事件数量</h5>
+                                                </div>
+                                                <div class="panel-content">
+                                                    <h2 class="no-margins">{{.insertAmount}}</h2>
+                                                    <small>&nbsp;</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-col-xs4">
+                                        <div class="panel layui-bg-number">
+                                            <div class="panel-body">
+                                                <div class="panel-title">
+                                                    <h5>响应Update事件数量</h5>
+                                                </div>
+                                                <div class="panel-content">
+                                                    <h2 class="no-margins">{{.updateAmount}}</h2>
+                                                    <small>&nbsp;</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-col-xs4">
+                                        <div class="panel layui-bg-number">
+                                            <div class="panel-body">
+                                                <div class="panel-title">
+                                                    <h5>响应Delete事件数量</h5>
+                                                </div>
+                                                <div class="panel-content">
+                                                    <h2 class="no-margins">{{.deleteAmount}}</h2>
+                                                    <small>&nbsp;</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header"><i class="fa fa-line-chart icon"></i>报表统计</div>
+                        <div class="layui-card-body">
+                            <div id="echarts-records" style="width: 100%;min-height:500px"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body layui-text layadmin-text">
+                            <p>如果您在使用中发现问题，欢迎提交Issues;如果此开源软件对您有帮助，请在GitHub加个Star支持一下</p>
+                            <p></p>Github地址：<a target="_blank"
+                                href="https://github.com/wj596/go-mysql-transfer">go-mysql-transfer</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="statics/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="statics/js/lay-config.js?v=2.0.0" charset="utf-8"></script>
 <script>
-    layui.use(['jquery', 'layer', 'miniAdmin', 'miniTongji'], function () {
+    layui.use(['jquery', 'miniAdmin', 'echarts'], function () {
         var $ = layui.jquery,
-            layer = layui.layer,
+
             miniAdmin = layui.miniAdmin,
-            miniTongji = layui.miniTongji;
+            echarts = layui.echarts;
 
-        var options = {
-            iniUrl: "api/init.json",    // 初始化接口
-            clearUrl: "api/clear.json", // 缓存清理接口
-            renderPageVersion: true,    // 初始化页面是否加版本号
-            bgColorDefault: false,      // 主题默认配置
-            multiModule: true,          // 是否开启多模块
-            menuChildOpen: false,       // 是否默认展开菜单
-            loadingTime: 0,             // 初始化加载时间
-            pageAnim: true,             // 切换菜单动画
+        var options = {};
+        /// miniAdmin.render(options);
+
+        /**
+         * 报表功能
+         */
+        var echartsRecords = echarts.init(document.getElementById('echarts-records'), 'walden');
+        var tables = []
+        {{range .tables}} 
+            tables.push({{.}});
+        {{end}}
+
+        var inserts = []
+        {{range .insertAmounts}} 
+            inserts.push({{.}});
+        {{end}}
+
+        var updates = []
+        {{range .updateAmounts}} 
+            updates.push({{.}});
+        {{end}}
+
+        var deletes = []
+        {{range .deleteAmounts}} 
+            deletes.push({{.}});
+        {{end}}
+
+        
+
+        var optionRecords = {
+            tooltip: {
+                trigger: "axis",
+            },
+            legend: {
+                itemWidth: 15,
+                itemHeight: 15,
+                data: ['Delete', 'Update', 'Insert'],
+            },
+            xAxis: {
+                data: tables,
+                axisLabel:{
+                    interval: 0,//横轴信息全部显示
+                    rotate: 25,// 倾斜角度
+                },
+                splitLine: {
+                    show: false,
+                },
+            },
+            yAxis: {
+                splitLine: {
+                    show: false,
+                },
+            },
+            series: [{
+                name: 'Delete',
+                type: 'bar',
+                barWidth : 30,//柱图宽度
+                stack: '使用情况',
+                data: deletes,
+                itemStyle: {
+                    normal: { color: "#FF8849" },
+                }
+            }, {
+                name: 'Update',
+                type: 'bar',
+                barWidth : 30,//柱图宽度
+                stack: '使用情况',
+                data: updates,
+                itemStyle: {
+                    normal: { color: "#4169E1" },
+                }
+            }, {
+                name: 'Insert',
+                type: 'bar',
+                barWidth : 30,//柱图宽度
+                stack: '使用情况',
+                data: inserts,
+                itemStyle: {
+                    normal: { color: "#3FBB49" },
+                }
+            }]
         };
-        miniAdmin.render(options);
+        echartsRecords.setOption(optionRecords);
 
-        // 百度统计代码，只统计指定域名
-        miniTongji.render({
-            specific: true,
-            domains: [
-                '99php.cn',
-                'layuimini.99php.cn',
-                'layuimini-onepage.99php.cn',
-            ],
-        });
-
-        $('.login-out').on("click", function () {
-            layer.msg('退出登录成功', function () {
-                window.location = 'page/login-3.html';
-            });
-        });
+        // echarts 窗口缩放自适应
+        window.onresize = function () {
+            echartsRecords.resize();
+        }
     });
 </script>
 </body>
+
 </html>
+{{end}}

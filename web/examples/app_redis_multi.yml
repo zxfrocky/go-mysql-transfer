@@ -1,0 +1,59 @@
+# mysql配置
+addr: 127.0.0.1:3306
+user: root
+pass: root
+charset : utf8
+slave_id: 1001 #slave ID
+flavor: mysql #mysql or mariadb,默认mysql
+
+#系统相关配置
+#data_dir: D:\\transfer #应用产生的数据存放地址，包括日志、缓存数据等，默认当前运行目录下store文件夹
+#logger:
+#  level: info #日志级别；支持：debug|info|warn|error，默认info
+
+#maxprocs: 50 #并发协（线）程数量，默认为: CPU核数*2；一般情况下不需要设置此项
+#bulk_size: 1000 #每批处理数量，不写默认100，可以根据带宽、机器性能等调整;如果是全量数据初始化时redis建议设为1000，其他接收端酌情调大
+
+#prometheus相关配置
+#enable_exporter: true #是否启用prometheus exporter，默认false
+#exporter_addr: 9595 #prometheus exporter端口，默认9595
+
+#web admin相关配置
+enable_web_admin: true #是否启用web admin，默认false
+web_admin_port: 8060 #web监控端口,默认8060
+
+#cluster: # 集群相关配置
+  #name: myTransfer #集群名称，具有相同name的节点放入同一个集群
+  #bind_ip: 127.0.0.1 # 绑定的IP,如果机器有多张网卡(包含虚拟网卡)会有多个IP，使用这个属性绑定一个
+  #ZooKeeper地址，多个用逗号风格
+  #zk_addrs: 192.168.1.10:2181,192.168.1.11:2182,192.168.1.12:2183
+  #zk_authentication: 123456 #digest类型的访问秘钥，如：user:password，默认为空
+  #etcd_addrs: 127.0.0.1:2379 #etcd连接地址，多个用逗号分隔
+  #etcd_user: test #etcd用户名
+  #etcd_password: 123456 #etcd密码
+
+
+#目标类型
+target: redis # 支持redis、mongodb、elasticsearch、rocketmq、kafka、rabbitmq
+
+#redis连接配置
+redis_addrs: 127.0.0.1:6379 #redis地址，多个用逗号分隔
+#redis_group_type: cluster   # 集群类型 sentinel或者cluster
+#redis_master_name: mymaster # Master节点名称,如果group_type为sentinel则此项不能为空，为cluster此项无效
+#redis_pass: 123456 #redis密码
+#redis_database: 0  #redis数据库 0-16,默认0。如果group_type为cluster此项无效
+
+#规则配置  
+rule:
+  -
+    schema: eseap #数据库名称
+    table: t_user #表名称
+    column_underscore_to_camel: true #列名称下划线转驼峰,默认为false
+    value_encoder: json  #值编码，支持json、kv-commas、v-commas；默认为json；json形如：{"id":123,"name":"wangjie"} 、kv-commas形如：id=123,name="wangjie"、v-commas形如：123,wangjie
+    redis_structure: string # 数据类型。 支持string、hash、list、set、sortedset(与redis的数据类型一致)
+  -
+    schema: eseap #数据库名称
+    table: t_sign #表名称
+    column_underscore_to_camel: true #列名称下划线转驼峰,默认为false
+    value_encoder: json  #值编码，支持json、kv-commas、v-commas；默认为json；json形如：{"id":123,"name":"wangjie"} 、kv-commas形如：id=123,name="wangjie"、v-commas形如：123,wangjie
+    redis_structure: string # 数据类型。 支持string、hash、list、set、sortedset(与redis的数据类型一致)

@@ -44,6 +44,7 @@ func newHandler() *handler {
 }
 
 func (s *handler) OnRotate(header *replication.EventHeader, rotateEvent *replication.RotateEvent) error {
+	logs.Infof("OnRotate  header:%+v rotateEvent:%+v", header, rotateEvent)
 	s.queue <- model.PosRequest{
 		Name:  string(rotateEvent.NextLogName),
 		Pos:   uint32(rotateEvent.Position),
@@ -64,6 +65,7 @@ func (s *handler) OnRotate(e *replication.RotateEvent) error {
 */
 
 func (s *handler) OnTableChanged(header *replication.EventHeader, schema string, table string) error {
+	logs.Infof("OnTableChanged  header:%+v schema:%v table：%v", header, schema, table)
 	err := _transferService.updateRule(schema, table)
 	if err != nil {
 		return errors.Trace(err)
@@ -82,6 +84,7 @@ func (s *handler) OnTableChanged(schema, table string) error {
 */
 
 func (s *handler) OnDDL(header *replication.EventHeader, nextPos mysql.Position, _ *replication.QueryEvent) error {
+	logs.Infof("OnDDL  header:%+v nextPos:%v ", header, nextPos)
 	s.queue <- model.PosRequest{
 		Name:  nextPos.Name,
 		Pos:   nextPos.Pos,
@@ -91,6 +94,7 @@ func (s *handler) OnDDL(header *replication.EventHeader, nextPos mysql.Position,
 }
 
 func (s *handler) OnXID(header *replication.EventHeader, nextPos mysql.Position) error {
+	logs.Infof("header  header:%+v nextPos:%v ", header, nextPos)
 	s.queue <- model.PosRequest{
 		Name:  nextPos.Name,
 		Pos:   nextPos.Pos,
@@ -141,10 +145,12 @@ func (s *handler) OnRow(e *canal.RowsEvent) error {
 }
 
 func (s *handler) OnGTID(header *replication.EventHeader, gtid mysql.GTIDSet) error {
+	logs.Infof("OnGTID  header:%+v gtid:%v ", header, gtid)
 	return nil
 }
 
 func (s *handler) OnPosSynced(header *replication.EventHeader, pos mysql.Position, set mysql.GTIDSet, force bool) error {
+	logs.Infof("OnPosSynced  header:%+v pos:%v set:%v force:%v", header, pos, set, force)
 	return nil
 }
 

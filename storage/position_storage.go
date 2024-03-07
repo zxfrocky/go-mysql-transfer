@@ -18,15 +18,15 @@
 package storage
 
 import (
-	"github.com/go-mysql-org/go-mysql/mysql"
+	"go-mysql-transfer/model"
 
 	"go-mysql-transfer/global"
 )
 
 type PositionStorage interface {
-	Initialize() error
-	Save(pos mysql.Position) error
-	Get() (mysql.Position, error)
+	Initialize(model.PosRequest) error
+	Save(model.PosRequest) error
+	Get() (model.PosRequest, error)
 }
 
 func NewPositionStorage() PositionStorage {
@@ -37,6 +37,10 @@ func NewPositionStorage() PositionStorage {
 		if global.Cfg().IsEtcd() {
 			return &etcdPositionStorage{}
 		}
+	}
+
+	if global.Cfg().IsFile() {
+		return &filePositionStorage{}
 	}
 
 	return &boltPositionStorage{}

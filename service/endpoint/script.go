@@ -21,8 +21,6 @@ import (
 	"log"
 
 	"github.com/pingcap/errors"
-	"github.com/go-mysql-org/go-mysql/mysql"
-
 	"go-mysql-transfer/global"
 	"go-mysql-transfer/metrics"
 	"go-mysql-transfer/model"
@@ -45,7 +43,7 @@ func (s *ScriptEndpoint) Ping() error {
 	return nil
 }
 
-func (s *ScriptEndpoint) Consume(from mysql.Position, rows []*model.RowRequest) error {
+func (s *ScriptEndpoint) Consume(from interface{}, rows []*model.RowRequest) error {
 	for _, row := range rows {
 		rule, _ := global.RuleIns(row.RuleKey)
 		if rule.TableColumnSize != len(row.Row) {

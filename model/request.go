@@ -17,9 +17,10 @@ type RowRequest struct {
 }
 
 type PosRequest struct {
-	Name  string
-	Pos   uint32
-	Force bool
+	Name  string `json:"name,omitempty"`
+	Pos   uint32 `json:"pos,omitempty"`
+	Gtid  string `json:"gtid,omitempty"`
+	Force bool   `json:"-"`
 }
 
 func BuildRowRequest() *RowRequest {

@@ -19,8 +19,7 @@ package storage
 
 import (
 	"encoding/json"
-
-	"github.com/go-mysql-org/go-mysql/mysql"
+	"go-mysql-transfer/model"
 
 	"go-mysql-transfer/global"
 	"go-mysql-transfer/util/etcds"
@@ -29,8 +28,8 @@ import (
 type etcdPositionStorage struct {
 }
 
-func (s *etcdPositionStorage) Initialize() error {
-	data, err := json.Marshal(mysql.Position{})
+func (s *etcdPositionStorage) Initialize(pos model.PosRequest) error {
+	data, err := json.Marshal(pos)
 	if err != nil {
 		return err
 	}
@@ -43,7 +42,7 @@ func (s *etcdPositionStorage) Initialize() error {
 	return nil
 }
 
-func (s *etcdPositionStorage) Save(pos mysql.Position) error {
+func (s *etcdPositionStorage) Save(pos model.PosRequest) error {
 	data, err := json.Marshal(pos)
 	if err != nil {
 		return err
@@ -52,8 +51,8 @@ func (s *etcdPositionStorage) Save(pos mysql.Position) error {
 	return etcds.Save(global.Cfg().ZkPositionDir(), string(data), _etcdOps)
 }
 
-func (s *etcdPositionStorage) Get() (mysql.Position, error) {
-	var entity mysql.Position
+func (s *etcdPositionStorage) Get() (model.PosRequest, error) {
+	var entity model.PosRequest
 
 	data, _, err := etcds.Get(global.Cfg().ZkPositionDir(), _etcdOps)
 	if err != nil {

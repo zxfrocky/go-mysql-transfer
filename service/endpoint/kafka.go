@@ -24,7 +24,6 @@ import (
 	"sync"
 
 	"github.com/IBM/sarama"
-	"github.com/go-mysql-org/go-mysql/mysql"
 	"github.com/juju/errors"
 
 	"go-mysql-transfer/global"
@@ -80,7 +79,7 @@ func (s *KafkaEndpoint) Ping() error {
 	return s.client.RefreshMetadata()
 }
 
-func (s *KafkaEndpoint) Consume(from mysql.Position, rows []*model.RowRequest) error {
+func (s *KafkaEndpoint) Consume(from interface{}, rows []*model.RowRequest) error {
 	var ms []*sarama.ProducerMessage
 	for _, row := range rows {
 		rule, _ := global.RuleIns(row.RuleKey)

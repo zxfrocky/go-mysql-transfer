@@ -23,9 +23,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/juju/errors"
 	"github.com/go-mysql-org/go-mysql/canal"
-	"github.com/go-mysql-org/go-mysql/mysql"
+	"github.com/juju/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -122,7 +121,7 @@ func (s *MongoEndpoint) collection(key cKey) *mongo.Collection {
 	return c
 }
 
-func (s *MongoEndpoint) Consume(from mysql.Position, rows []*model.RowRequest) error {
+func (s *MongoEndpoint) Consume(from interface{}, rows []*model.RowRequest) error {
 	models := make(map[cKey][]mongo.WriteModel, 0)
 	for _, row := range rows {
 		rule, _ := global.RuleIns(row.RuleKey)

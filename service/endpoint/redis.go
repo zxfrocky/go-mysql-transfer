@@ -23,11 +23,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/go-mysql-org/go-mysql/canal"
 	"github.com/go-redis/redis"
 	"github.com/pingcap/errors"
-	"github.com/go-mysql-org/go-mysql/canal"
-	"github.com/go-mysql-org/go-mysql/mysql"
-
 	"go-mysql-transfer/global"
 	"go-mysql-transfer/metrics"
 	"go-mysql-transfer/model"
@@ -99,7 +97,7 @@ func (s *RedisEndpoint) pipe() redis.Pipeliner {
 	return pipe
 }
 
-func (s *RedisEndpoint) Consume(from mysql.Position, rows []*model.RowRequest) error {
+func (s *RedisEndpoint) Consume(from interface{}, rows []*model.RowRequest) error {
 	pipe := s.pipe()
 	for _, row := range rows {
 		rule, _ := global.RuleIns(row.RuleKey)

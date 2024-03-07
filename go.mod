@@ -2,8 +2,6 @@ module go-mysql-transfer
 
 go 1.21.6
 
-//replace github.com/etcd-io/bbolt => go.etcd.io/bbolt v1.3.9
-
 require (
 	github.com/IBM/sarama v1.43.0
 	github.com/apache/rocketmq-client-go/v2 v2.1.2
@@ -135,12 +133,6 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
 )
 
-replace github.com/coreos/bbolt => go.etcd.io/bbolt v1.3.9
 
 replace go.etcd.io/bbolt => github.com/coreos/bbolt v1.3.9
-
-//require github.com/etcd-io/bbolt v1.3.9 // indirect
-
-//replace github.com/coreos/bbolt => go.etcd.io/bbolt v1.3.5
-
 replace google.golang.org/grpc => google.golang.org/grpc v1.29.1

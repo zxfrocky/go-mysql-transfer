@@ -19,8 +19,7 @@ package storage
 
 import (
 	"encoding/json"
-
-	"github.com/go-mysql-org/go-mysql/mysql"
+	"go-mysql-transfer/model"
 
 	"go-mysql-transfer/global"
 	"go-mysql-transfer/util/zookeepers"
@@ -29,13 +28,13 @@ import (
 type zkPositionStorage struct {
 }
 
-func (s *zkPositionStorage) Initialize() error {
-	pos, err := json.Marshal(mysql.Position{})
+func (s *zkPositionStorage) Initialize(pos model.PosRequest) error {
+	posByte, err := json.Marshal(pos)
 	if err != nil {
 		return err
 	}
 
-	err = zookeepers.CreateDirWithDataIfNecessary(global.Cfg().ZkPositionDir(), pos ,_zkConn)
+	err = zookeepers.CreateDirWithDataIfNecessary(global.Cfg().ZkPositionDir(), posByte, _zkConn)
 	if err != nil {
 		return err
 	}
@@ -44,7 +43,7 @@ func (s *zkPositionStorage) Initialize() error {
 	return err
 }
 
-func (s *zkPositionStorage) Save(pos mysql.Position) error {
+func (s *zkPositionStorage) Save(pos model.PosRequest) error {
 	_, stat, err := _zkConn.Get(global.Cfg().ZkPositionDir())
 	if err != nil {
 		return err
@@ -60,8 +59,8 @@ func (s *zkPositionStorage) Save(pos mysql.Position) error {
 	return err
 }
 
-func (s *zkPositionStorage) Get() (mysql.Position, error) {
-	var entity mysql.Position
+func (s *zkPositionStorage) Get() (model.PosRequest, error) {
+	var entity model.PosRequest
 
 	data, _, err := _zkConn.Get(global.Cfg().ZkPositionDir())
 	if err != nil {

@@ -55,6 +55,10 @@ const (
 
 	// update or insert
 	UpsertAction = "upsert"
+
+	//哪种方式同步
+	SyncTypeGtid     = "gtid"
+	SyncTypePosition = "position"
 )
 
 var _config *Config
@@ -67,9 +71,12 @@ type Config struct {
 	Password string `yaml:"pass"`
 	Charset  string `yaml:"charset"`
 
-	SlaveID uint32 `yaml:"slave_id"`
-	Flavor  string `yaml:"flavor"`
-	DataDir string `yaml:"data_dir"`
+	SlaveID         uint32 `yaml:"slave_id"`
+	Flavor          string `yaml:"flavor"`
+	DataDir         string `yaml:"data_dir"`
+	SyncType        string `yaml:"sync_type"`         //gtid or position
+	FirstSyncLatest bool   `yaml:"first_sync_latest"` //第一次是否从最新位置同步
+	UseFileStorage  bool   `yaml:"use_file_storage"`  //是否用文件存储pos
 
 	DumpExec       string `yaml:"mysqldump"`
 	SkipMasterData bool   `yaml:"skip_master_data"`
@@ -230,6 +237,10 @@ func checkConfig(c *Config) error {
 
 	if c.BulkSize == 0 {
 		c.BulkSize = _flushBulkSize
+	}
+
+	if c.SyncType == "" || (c.SyncType != SyncTypePosition && c.SyncType != SyncTypeGtid) {
+		c.SyncType = SyncTypeGtid
 	}
 
 	if c.DataDir == "" {
@@ -419,6 +430,10 @@ func (c *Config) IsEtcd() bool {
 	}
 
 	return true
+}
+
+func (c *Config) IsFile() bool {
+	return c.UseFileStorage
 }
 
 func (c *Config) IsRedis() bool {

@@ -23,10 +23,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/go-mysql-org/go-mysql/canal"
 	"github.com/juju/errors"
 	"github.com/olivere/elastic"
-	"github.com/go-mysql-org/go-mysql/canal"
-	"github.com/go-mysql-org/go-mysql/mysql"
 
 	"go-mysql-transfer/global"
 	"go-mysql-transfer/metrics"
@@ -123,7 +122,7 @@ func (s *Elastic6Endpoint) updateIndexMapping(rule *global.Rule) error {
 		return err
 	}
 
-	if ret[rule.ElsIndex]==nil{
+	if ret[rule.ElsIndex] == nil {
 		return nil
 	}
 	retIndex := ret[rule.ElsIndex].(map[string]interface{})
@@ -133,12 +132,12 @@ func (s *Elastic6Endpoint) updateIndexMapping(rule *global.Rule) error {
 	}
 	retMaps := retIndex["mappings"].(map[string]interface{})
 
-	if retMaps["_doc"]==nil{
+	if retMaps["_doc"] == nil {
 		return nil
 	}
 	retDoc := retMaps["_doc"].(map[string]interface{})
 
-	if retDoc["properties"]==nil{
+	if retDoc["properties"] == nil {
 		return nil
 	}
 	retPros := retDoc["properties"].(map[string]interface{})
@@ -188,7 +187,7 @@ func (s *Elastic6Endpoint) Ping() error {
 	return errors.New("ssx")
 }
 
-func (s *Elastic6Endpoint) Consume(from mysql.Position, rows []*model.RowRequest) error {
+func (s *Elastic6Endpoint) Consume(from interface{}, rows []*model.RowRequest) error {
 	bulk := s.client.Bulk()
 	for _, row := range rows {
 		rule, _ := global.RuleIns(row.RuleKey)
@@ -219,7 +218,7 @@ func (s *Elastic6Endpoint) Consume(from mysql.Position, rows []*model.RowRequest
 		}
 	}
 
-	if bulk.NumberOfActions()==0{
+	if bulk.NumberOfActions() == 0 {
 		return nil
 	}
 

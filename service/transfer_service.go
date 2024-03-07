@@ -18,13 +18,17 @@
 package service
 
 import (
+	"database/sql"
 	"fmt"
+	"go-mysql-transfer/model"
 	"log"
 	"regexp"
+	"strconv"
 	"sync"
 	"time"
 
 	"github.com/go-mysql-org/go-mysql/canal"
+	_ "github.com/go-mysql-org/go-mysql/driver"
 	"github.com/go-mysql-org/go-mysql/mysql"
 	"github.com/juju/errors"
 	"go.uber.org/atomic"
@@ -75,8 +79,19 @@ func (s *TransferService) initialize() error {
 
 	s.addDumpDatabaseOrTable()
 
+	var (
+		pos model.PosRequest
+		err error
+	)
+	if global.Cfg().FirstSyncLatest {
+		pos, err = s.firstLoadPosition()
+		if err != nil {
+			return err
+		}
+	}
+
 	positionDao := storage.NewPositionStorage()
-	if err := positionDao.Initialize(); err != nil {
+	if err := positionDao.Initialize(pos); err != nil {
 		return errors.Trace(err)
 	}
 	s.positionDao = positionDao
@@ -106,20 +121,34 @@ func (s *TransferService) initialize() error {
 func (s *TransferService) run() error {
 	current, err := s.positionDao.Get()
 	if err != nil {
+		logs.Errorf("transfer positionDao.Get err:%v", err)
 		return err
 	}
-
 	s.wg.Add(1)
-	go func(p mysql.Position) {
+	go func(pos model.PosRequest) {
 		s.canalEnable.Store(true)
-		log.Println(fmt.Sprintf("transfer run from position(%s %d)", p.Name, p.Pos))
-		if err := s.canal.RunFrom(p); err != nil {
-			log.Println(fmt.Sprintf("start transfer : %v", err))
-			logs.Errorf("canal : %v", errors.ErrorStack(err))
-			if s.canalHandler != nil {
-				s.canalHandler.stopListener()
+		log.Println(fmt.Sprintf("transfer run from position(%s %d %s)", pos.Name, pos.Pos, pos.Gtid))
+
+		if global.Cfg().SyncType == global.SyncTypePosition {
+			p := mysql.Position{Name: pos.Name, Pos: pos.Pos}
+			if err := s.canal.RunFrom(p); err != nil {
+				log.Println(fmt.Sprintf("start transfer : %v", err))
+				logs.Errorf("canal : %v", errors.ErrorStack(err))
+				if s.canalHandler != nil {
+					s.canalHandler.stopListener()
+				}
+				s.canalEnable.Store(false)
 			}
-			s.canalEnable.Store(false)
+		} else {
+			set, _ := mysql.ParseGTIDSet(global.Cfg().Flavor, pos.Gtid)
+			if err := s.canal.StartFromGTID(set); err != nil {
+				log.Println(fmt.Sprintf("start transfer : %v", err))
+				logs.Errorf("canal : %v", errors.ErrorStack(err))
+				if s.canalHandler != nil {
+					s.canalHandler.stopListener()
+				}
+				s.canalEnable.Store(false)
+			}
 		}
 
 		logs.Info("Canal is Closed")
@@ -190,7 +219,7 @@ func (s *TransferService) Close() {
 	s.loopStopSignal <- struct{}{}
 }
 
-func (s *TransferService) Position() (mysql.Position, error) {
+func (s *TransferService) Position() (model.PosRequest, error) {
 	return s.positionDao.Get()
 }
 
@@ -351,4 +380,84 @@ func (s *TransferService) startLoop() {
 			}
 		}
 	}()
+}
+
+func (s *TransferService) firstLoadPosition() (model.PosRequest, error) {
+
+	/*
+		 show global variables like 'gtid_executed';
+		+---------------+-------------------------------------------+
+		| Variable_name | Value                                     |
+		+---------------+-------------------------------------------+
+		| gtid_executed | 98dff9c0-be51-11ee-a8dd-0242ac110002:1-12 |
+		+---------------+-------------------------------------------+
+		1 row in set (0.00 sec)
+
+	*/
+	schema := global.Cfg().RuleConfigs[0].Schema
+	//dbName := conf.Tables
+	dsn := fmt.Sprintf("%s:%s@%s?%s", global.Cfg().User, global.Cfg().Password, global.Cfg().Addr, schema)
+	db, err := sql.Open(global.Cfg().Flavor, dsn)
+	if err != nil {
+		logs.Errorf("firstLoadPosition open dsn:%v err:%v", dsn, err)
+		return model.PosRequest{}, err
+	}
+	defer db.Close()
+
+	//执行SHOW DATABASES;语句并获取结果集
+	rows, err := db.Query("show master status;")
+	if err != nil {
+		logs.Errorf("firstLoadPosition query fail:%v", err)
+		return model.PosRequest{}, err
+	}
+	defer rows.Close()
+
+	//处理每一条记录
+	columns, err := rows.Columns()
+	if err != nil {
+		logs.Errorf("firstLoadPosition query fail:%v", err)
+		return model.PosRequest{}, err
+	}
+
+	valueList := make([]string, len(columns))
+	valueAnyList := make([]any, len(valueList))
+	for i := 0; i < len(valueList); i++ {
+		valueAnyList[i] = &valueList[i]
+	}
+	find := false
+	for rows.Next() {
+		err = rows.Scan(valueAnyList[0:]...)
+		if err != nil {
+			logs.Errorf("firstLoadPosition rows.Scan:%v", err)
+			return model.PosRequest{}, err
+		}
+		find = true
+		break
+	}
+
+	//检查错误信息
+	err = rows.Err()
+	if err != nil {
+		logs.Errorf("firstLoadPosition rows err:%v", err)
+		return model.PosRequest{}, err
+	}
+
+	if !find {
+		return model.PosRequest{}, nil
+	}
+
+	pos := model.PosRequest{}
+	for i, name := range columns {
+		if name == "File" {
+			pos.Name = valueList[i]
+		} else if name == "Position" {
+			valueInt, _ := strconv.ParseInt(valueList[i], 10, 64)
+			pos.Pos = uint32(valueInt)
+		} else if name == "Executed_Gtid_Set" {
+			pos.Gtid = valueList[i]
+		}
+	}
+
+	logs.Infof("firstLoadPosition pos:%+v", pos)
+	return pos, nil
 }

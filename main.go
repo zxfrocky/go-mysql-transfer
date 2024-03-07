@@ -20,13 +20,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"go-mysql-transfer/model"
 	"log"
 	"os"
 	"os/signal"
 	"regexp"
 	"syscall"
 
-	"github.com/go-mysql-org/go-mysql/mysql"
 	"github.com/juju/errors"
 
 	"go-mysql-transfer/global"
@@ -161,12 +161,13 @@ func doStatus() {
 
 func doPosition() {
 	others := flag.Args()
-	if len(others) != 2 {
+	if len(others) != 3 {
 		println("error: please input the binlog's File and Position")
 		return
 	}
 	f := others[0]
 	p := others[1]
+	gtid := others[2]
 
 	matched, _ := regexp.MatchString(".+\\.\\d+$", f)
 	if !matched {
@@ -180,9 +181,10 @@ func doPosition() {
 		return
 	}
 	ps := storage.NewPositionStorage()
-	pos := mysql.Position{
+	pos := model.PosRequest{
 		Name: f,
 		Pos:  pp,
+		Gtid: gtid,
 	}
 	ps.Save(pos)
 	fmt.Printf("The current dump position is : %s %d \n", f, pp)

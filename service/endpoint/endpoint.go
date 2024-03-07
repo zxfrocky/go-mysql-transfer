@@ -23,10 +23,10 @@ import (
 	"strings"
 	"time"
 
-	jsoniter "github.com/json-iterator/go"
 	"github.com/go-mysql-org/go-mysql/canal"
 	"github.com/go-mysql-org/go-mysql/mysql"
 	"github.com/go-mysql-org/go-mysql/schema"
+	jsoniter "github.com/json-iterator/go"
 
 	"go-mysql-transfer/global"
 	"go-mysql-transfer/model"
@@ -42,7 +42,7 @@ const defaultDateFormatter = "2006-01-02"
 type Endpoint interface {
 	Connect() error
 	Ping() error
-	Consume(mysql.Position, []*model.RowRequest) error
+	Consume(interface{}, []*model.RowRequest) error
 	Stock([]*model.RowRequest) int64
 	Close()
 }
@@ -50,6 +50,8 @@ type Endpoint interface {
 func NewEndpoint(ds *canal.Canal) Endpoint {
 	cfg := global.Cfg()
 	luaengine.InitActuator(ds)
+
+	return newMockEndpoint()
 
 	if cfg.IsRedis() {
 		return newRedisEndpoint()

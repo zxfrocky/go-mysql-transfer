@@ -20,6 +20,7 @@ package storage
 import (
 	"errors"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -40,12 +41,17 @@ const (
 	_boltFilePath = "db"
 	_boltFileName = "data.db"
 	_boltFileMode = 0600
+
+	_filePath = "db"
+	_fileName = "pos.txt"
+	_fileMode = 0600
 )
 
 var (
 	_positionBucket = []byte("Position")
 	_fixPositionId  = byteutil.Uint64ToBytes(uint64(1))
 
+	_file           *os.File
 	_bolt           *bbolt.DB
 	_zkConn         *zk.Conn
 	_zkStatusSignal <-chan zk.Event
@@ -56,10 +62,6 @@ var (
 )
 
 func Initialize() error {
-	if err := initBolt(); err != nil {
-		return err
-	}
-
 	if global.Cfg().IsZk() {
 		if err := initZk(); err != nil {
 			return err
@@ -68,6 +70,16 @@ func Initialize() error {
 
 	if global.Cfg().IsEtcd() {
 		if err := initEtcd(); err != nil {
+			return err
+		}
+	}
+
+	if global.Cfg().IsFile() {
+		if err := initFilePosStorage(); err != nil {
+			return err
+		}
+	} else {
+		if err := initBolt(); err != nil {
 			return err
 		}
 	}
@@ -150,6 +162,30 @@ func initEtcd() error {
 	_etcdOps = clientv3.NewKV(_etcdConn)
 
 	return nil
+}
+
+func initFilePosStorage() error {
+	blotStorePath := filepath.Join(global.Cfg().DataDir, _filePath)
+	if err := files.MkdirIfNecessary(blotStorePath); err != nil {
+		return errors.New(fmt.Sprintf("create boltdb store : %s", err.Error()))
+	}
+
+	boltFilePath := filepath.Join(blotStorePath, _fileName)
+	file, err := os.OpenFile(boltFilePath, os.O_RDWR|os.O_CREATE, _fileMode)
+	if err != nil {
+		return errors.New(fmt.Sprintf("open file: %s", err.Error()))
+	}
+
+	/*
+		err = bolt.Update(func(tx *bbolt.Tx) error {
+			tx.CreateBucketIfNotExists(_positionBucket)
+			return nil
+		})
+	*/
+
+	_file = file
+
+	return err
 }
 
 func ZKConn() *zk.Conn {

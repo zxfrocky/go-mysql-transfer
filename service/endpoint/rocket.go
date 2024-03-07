@@ -28,7 +28,6 @@ import (
 	"github.com/apache/rocketmq-client-go/v2/primitive"
 	"github.com/apache/rocketmq-client-go/v2/producer"
 	"github.com/apache/rocketmq-client-go/v2/rlog"
-	"github.com/go-mysql-org/go-mysql/mysql"
 	"github.com/juju/errors"
 
 	"go-mysql-transfer/global"
@@ -86,7 +85,7 @@ func (s *RocketEndpoint) Ping() error {
 	return err
 }
 
-func (s *RocketEndpoint) Consume(from mysql.Position, rows []*model.RowRequest) error {
+func (s *RocketEndpoint) Consume(from interface{}, rows []*model.RowRequest) error {
 	var ms []*primitive.Message
 	for _, row := range rows {
 		rule, _ := global.RuleIns(row.RuleKey)

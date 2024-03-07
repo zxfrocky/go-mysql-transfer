@@ -18,18 +18,18 @@
 package storage
 
 import (
-	"github.com/go-mysql-org/go-mysql/mysql"
+	"encoding/json"
 	"github.com/juju/errors"
-	"github.com/vmihailenco/msgpack"
+	"go-mysql-transfer/model"
 	"go.etcd.io/bbolt"
 )
 
 type boltPositionStorage struct {
-	Name string
-	Pos  uint32
+	//Name string
+	//Pos  uint32
 }
 
-func (s *boltPositionStorage) Initialize() error {
+func (s *boltPositionStorage) Initialize(pos model.PosRequest) error {
 	return _bolt.Update(func(tx *bbolt.Tx) error {
 		bt := tx.Bucket(_positionBucket)
 		data := bt.Get(_fixPositionId)
@@ -37,7 +37,7 @@ func (s *boltPositionStorage) Initialize() error {
 			return nil
 		}
 
-		bytes, err := msgpack.Marshal(mysql.Position{})
+		bytes, err := json.Marshal(pos) //msgpack.Marshal(pos)
 		if err != nil {
 			return err
 		}
@@ -45,10 +45,10 @@ func (s *boltPositionStorage) Initialize() error {
 	})
 }
 
-func (s *boltPositionStorage) Save(pos mysql.Position) error {
+func (s *boltPositionStorage) Save(pos model.PosRequest) error {
 	return _bolt.Update(func(tx *bbolt.Tx) error {
 		bt := tx.Bucket(_positionBucket)
-		data, err := msgpack.Marshal(pos)
+		data, err := json.Marshal(pos)
 		if err != nil {
 			return err
 		}
@@ -56,15 +56,15 @@ func (s *boltPositionStorage) Save(pos mysql.Position) error {
 	})
 }
 
-func (s *boltPositionStorage) Get() (mysql.Position, error) {
-	var entity mysql.Position
+func (s *boltPositionStorage) Get() (model.PosRequest, error) {
+	var entity model.PosRequest
 	err := _bolt.View(func(tx *bbolt.Tx) error {
 		bt := tx.Bucket(_positionBucket)
 		data := bt.Get(_fixPositionId)
 		if data == nil {
 			return errors.NotFoundf("PositionStorage")
 		}
-		return msgpack.Unmarshal(data, &entity)
+		return json.Unmarshal(data, &entity)
 	})
 
 	return entity, err

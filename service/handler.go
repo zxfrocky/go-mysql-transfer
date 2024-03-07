@@ -45,10 +45,12 @@ func newHandler() *handler {
 
 func (s *handler) OnRotate(header *replication.EventHeader, rotateEvent *replication.RotateEvent) error {
 	logs.Infof("OnRotate  header:%+v rotateEvent:%+v", header, rotateEvent)
-	s.queue <- model.PosRequest{
-		Name:  string(rotateEvent.NextLogName),
-		Pos:   uint32(rotateEvent.Position),
-		Force: true,
+	if global.Cfg().SyncType == global.SyncTypePosition {
+		s.queue <- model.PosRequest{
+			Name:  string(rotateEvent.NextLogName),
+			Pos:   uint32(rotateEvent.Position),
+			Force: true,
+		}
 	}
 	return nil
 }
@@ -73,32 +75,26 @@ func (s *handler) OnTableChanged(header *replication.EventHeader, schema string,
 	return nil
 }
 
-/*
-func (s *handler) OnTableChanged(schema, table string) error {
-	err := _transferService.updateRule(schema, table)
-	if err != nil {
-		return errors.Trace(err)
-	}
-	return nil
-}
-*/
-
 func (s *handler) OnDDL(header *replication.EventHeader, nextPos mysql.Position, _ *replication.QueryEvent) error {
 	logs.Infof("OnDDL  header:%+v nextPos:%v ", header, nextPos)
-	s.queue <- model.PosRequest{
-		Name:  nextPos.Name,
-		Pos:   nextPos.Pos,
-		Force: true,
+	if global.Cfg().SyncType == global.SyncTypePosition {
+		s.queue <- model.PosRequest{
+			Name:  nextPos.Name,
+			Pos:   nextPos.Pos,
+			Force: true,
+		}
 	}
 	return nil
 }
 
 func (s *handler) OnXID(header *replication.EventHeader, nextPos mysql.Position) error {
 	logs.Infof("header  header:%+v nextPos:%v ", header, nextPos)
-	s.queue <- model.PosRequest{
-		Name:  nextPos.Name,
-		Pos:   nextPos.Pos,
-		Force: false,
+	if global.Cfg().SyncType == global.SyncTypePosition {
+		s.queue <- model.PosRequest{
+			Name:  nextPos.Name,
+			Pos:   nextPos.Pos,
+			Force: false,
+		}
 	}
 	return nil
 }
@@ -146,11 +142,25 @@ func (s *handler) OnRow(e *canal.RowsEvent) error {
 
 func (s *handler) OnGTID(header *replication.EventHeader, gtid mysql.GTIDSet) error {
 	logs.Infof("OnGTID  header:%+v gtid:%v ", header, gtid)
+	if global.Cfg().SyncType == global.SyncTypeGtid {
+		s.queue <- model.PosRequest{
+			Gtid:  gtid.String(),
+			Force: false,
+		}
+	}
 	return nil
 }
 
 func (s *handler) OnPosSynced(header *replication.EventHeader, pos mysql.Position, set mysql.GTIDSet, force bool) error {
 	logs.Infof("OnPosSynced  header:%+v pos:%v set:%v force:%v", header, pos, set, force)
+	if global.Cfg().SyncType == global.SyncTypeGtid {
+		s.queue <- model.PosRequest{
+			Name:  pos.Name,
+			Pos:   pos.Pos,
+			Gtid:  set.String(),
+			Force: force,
+		}
+	}
 	return nil
 }
 
@@ -167,7 +177,7 @@ func (s *handler) startListener() {
 
 		lastSavedTime := time.Now()
 		requests := make([]*model.RowRequest, 0, bulkSize)
-		var current mysql.Position
+		var current model.PosRequest //mysql.Position
 		from, _ := _transferService.positionDao.Get()
 		for {
 			needFlush := false
@@ -181,10 +191,13 @@ func (s *handler) startListener() {
 						lastSavedTime = now
 						needFlush = true
 						needSavePos = true
-						current = mysql.Position{
-							Name: v.Name,
-							Pos:  v.Pos,
-						}
+						/*
+							current = mysql.Position{
+								Name: v.Name,
+								Pos:  v.Pos,
+							}
+						*/
+						current = v
 					}
 				case []*model.RowRequest:
 					requests = append(requests, v...)

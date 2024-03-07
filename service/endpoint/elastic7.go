@@ -22,10 +22,9 @@ import (
 	"log"
 	"sync"
 
+	"github.com/go-mysql-org/go-mysql/canal"
 	"github.com/juju/errors"
 	"github.com/olivere/elastic/v7"
-	"github.com/go-mysql-org/go-mysql/canal"
-	"github.com/go-mysql-org/go-mysql/mysql"
 
 	"go-mysql-transfer/global"
 	"go-mysql-transfer/metrics"
@@ -122,7 +121,7 @@ func (s *Elastic7Endpoint) updateIndexMapping(rule *global.Rule) error {
 		return err
 	}
 
-	if ret[rule.ElsIndex]==nil{
+	if ret[rule.ElsIndex] == nil {
 		return nil
 	}
 	retIndex := ret[rule.ElsIndex].(map[string]interface{})
@@ -184,7 +183,7 @@ func (s *Elastic7Endpoint) Ping() error {
 	return errors.New("ssx")
 }
 
-func (s *Elastic7Endpoint) Consume(from mysql.Position, rows []*model.RowRequest) error {
+func (s *Elastic7Endpoint) Consume(from interface{}, rows []*model.RowRequest) error {
 	bulk := s.client.Bulk()
 	for _, row := range rows {
 		rule, _ := global.RuleIns(row.RuleKey)

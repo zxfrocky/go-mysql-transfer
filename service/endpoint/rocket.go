@@ -85,7 +85,7 @@ func (s *RocketEndpoint) Ping() error {
 	return err
 }
 
-func (s *RocketEndpoint) Consume(from interface{}, rows []*model.RowRequest) error {
+func (s *RocketEndpoint) Consume(from model.PosRequest, rows []*model.RowRequest) error {
 	var ms []*primitive.Message
 	for _, row := range rows {
 		rule, _ := global.RuleIns(row.RuleKey)
@@ -116,25 +116,35 @@ func (s *RocketEndpoint) Consume(from interface{}, rows []*model.RowRequest) err
 		return nil
 	}
 
-	var wg sync.WaitGroup
-	wg.Add(1)
-	var callbackErr error
-	err := s.client.SendAsync(context.Background(),
-		func(ctx context.Context, result *primitive.SendResult, e error) {
-			if e != nil {
-				callbackErr = e
-			}
-			wg.Done()
-		}, ms...)
-
-	if err != nil {
-		return err
+	//一条一条发？
+	for _, item := range ms {
+		_, err := s.client.SendSync(context.Background(), item)
+		if err != nil {
+			return err
+		}
 	}
-	wg.Wait()
 
-	if callbackErr != nil {
-		return err
-	}
+	/*
+		var wg sync.WaitGroup
+		wg.Add(1)
+		var callbackErr error
+		err := s.client.SendAsync(context.Background(),
+			func(ctx context.Context, result *primitive.SendResult, e error) {
+				if e != nil {
+					callbackErr = e
+				}
+				wg.Done()
+			}, ms...)
+
+		if err != nil {
+			return err
+		}
+		wg.Wait()
+
+		if callbackErr != nil {
+			return err
+		}
+	*/
 
 	logs.Infof("处理完成 %d 条数据", len(rows))
 	return nil

@@ -79,7 +79,7 @@ func (s *KafkaEndpoint) Ping() error {
 	return s.client.RefreshMetadata()
 }
 
-func (s *KafkaEndpoint) Consume(from interface{}, rows []*model.RowRequest) error {
+func (s *KafkaEndpoint) Consume(from model.PosRequest, rows []*model.RowRequest) error {
 	var ms []*sarama.ProducerMessage
 	for _, row := range rows {
 		rule, _ := global.RuleIns(row.RuleKey)

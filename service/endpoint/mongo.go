@@ -121,7 +121,7 @@ func (s *MongoEndpoint) collection(key cKey) *mongo.Collection {
 	return c
 }
 
-func (s *MongoEndpoint) Consume(from interface{}, rows []*model.RowRequest) error {
+func (s *MongoEndpoint) Consume(from model.PosRequest, rows []*model.RowRequest) error {
 	models := make(map[cKey][]mongo.WriteModel, 0)
 	for _, row := range rows {
 		rule, _ := global.RuleIns(row.RuleKey)

@@ -43,7 +43,7 @@ func (s *ScriptEndpoint) Ping() error {
 	return nil
 }
 
-func (s *ScriptEndpoint) Consume(from interface{}, rows []*model.RowRequest) error {
+func (s *ScriptEndpoint) Consume(from model.PosRequest, rows []*model.RowRequest) error {
 	for _, row := range rows {
 		rule, _ := global.RuleIns(row.RuleKey)
 		if rule.TableColumnSize != len(row.Row) {

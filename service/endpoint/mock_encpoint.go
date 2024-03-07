@@ -20,7 +20,7 @@ func (m MockEndpoint) Ping() error {
 	return nil
 }
 
-func (m MockEndpoint) Consume(i interface{}, requests []*model.RowRequest) error {
+func (m MockEndpoint) Consume(i model.PosRequest, requests []*model.RowRequest) error {
 	//TODO implement me
 	//panic("implement me")
 	logs.Infof("consume requests:%+v", requests)

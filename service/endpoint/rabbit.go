@@ -103,7 +103,7 @@ func (s *RabbitEndpoint) mergeQueue(name string) {
 	s.queues[name] = true
 }
 
-func (s *RabbitEndpoint) Consume(from interface{}, rows []*model.RowRequest) error {
+func (s *RabbitEndpoint) Consume(from model.PosRequest, rows []*model.RowRequest) error {
 	for _, row := range rows {
 		rule, _ := global.RuleIns(row.RuleKey)
 		if rule.TableColumnSize != len(row.Row) {

@@ -97,7 +97,7 @@ func (s *RedisEndpoint) pipe() redis.Pipeliner {
 	return pipe
 }
 
-func (s *RedisEndpoint) Consume(from interface{}, rows []*model.RowRequest) error {
+func (s *RedisEndpoint) Consume(from model.PosRequest, rows []*model.RowRequest) error {
 	pipe := s.pipe()
 	for _, row := range rows {
 		rule, _ := global.RuleIns(row.RuleKey)

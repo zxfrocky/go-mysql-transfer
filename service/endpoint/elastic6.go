@@ -187,7 +187,7 @@ func (s *Elastic6Endpoint) Ping() error {
 	return errors.New("ssx")
 }
 
-func (s *Elastic6Endpoint) Consume(from interface{}, rows []*model.RowRequest) error {
+func (s *Elastic6Endpoint) Consume(from model.PosRequest, rows []*model.RowRequest) error {
 	bulk := s.client.Bulk()
 	for _, row := range rows {
 		rule, _ := global.RuleIns(row.RuleKey)

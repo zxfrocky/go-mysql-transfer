@@ -51,7 +51,7 @@ func NewEndpoint(ds *canal.Canal) Endpoint {
 	cfg := global.Cfg()
 	luaengine.InitActuator(ds)
 
-	return newMockEndpoint()
+	//return newMockEndpoint()
 
 	if cfg.IsRedis() {
 		return newRedisEndpoint()

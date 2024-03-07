@@ -1,1 +1,0 @@
-{"name":"mysql-bin.000007","pos":4,"gtid":"98dff9c0-be51-11ee-a8dd-0242ac110002:1-21"}

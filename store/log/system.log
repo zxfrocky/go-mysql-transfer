@@ -1,7 +1,0 @@
-2024-03-07 18:42:40	info	firstLoadPosition pos:{Name:mysql-bin.000007 Pos:4041 Gtid:98dff9c0-be51-11ee-a8dd-0242ac110002:1-21 Force:false}
-2024-03-07 18:42:40	info	OnRotate  header:&{Timestamp:0 EventType:RotateEvent ServerID:1 EventSize:43 LogPos:0 Flags:32} rotateEvent:&{Position:4 NextLogName:[109 121 115 113 108 45 98 105 110 46 48 48 48 48 48 55]}
-2024-03-07 18:42:40	info	OnPosSynced  header:&{Timestamp:0 EventType:RotateEvent ServerID:1 EventSize:43 LogPos:0 Flags:32} pos:(mysql-bin.000007, 4) set:98dff9c0-be51-11ee-a8dd-0242ac110002:1-21 force:true
-2024-03-07 18:42:40	info	save position mysql-bin.000007 4
-2024-03-07 18:42:43	error	http: Server closed
-2024-03-07 18:42:43	info	Canal is Closed
-2024-03-07 18:42:43	info	OnPosSynced  header:<nil> pos:(mysql-bin.000007, 4) set:98dff9c0-be51-11ee-a8dd-0242ac110002:1-21 force:true

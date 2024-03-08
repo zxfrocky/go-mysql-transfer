@@ -44,8 +44,8 @@ func newHandler() *handler {
 }
 
 func (s *handler) OnRotate(header *replication.EventHeader, rotateEvent *replication.RotateEvent) error {
-	logs.Infof("OnRotate  header:%+v rotateEvent:%+v", header, rotateEvent)
 	if global.Cfg().SyncType == global.SyncTypePosition {
+		logs.Infof("OnRotate  header:%+v rotateEvent:%+v", header, rotateEvent)
 		s.queue <- model.PosRequest{
 			Name:  string(rotateEvent.NextLogName),
 			Pos:   uint32(rotateEvent.Position),
@@ -76,8 +76,8 @@ func (s *handler) OnTableChanged(header *replication.EventHeader, schema string,
 }
 
 func (s *handler) OnDDL(header *replication.EventHeader, nextPos mysql.Position, _ *replication.QueryEvent) error {
-	logs.Infof("OnDDL  header:%+v nextPos:%v ", header, nextPos)
 	if global.Cfg().SyncType == global.SyncTypePosition {
+		logs.Infof("OnDDL  header:%+v nextPos:%v ", header, nextPos)
 		s.queue <- model.PosRequest{
 			Name:  nextPos.Name,
 			Pos:   nextPos.Pos,
@@ -88,8 +88,8 @@ func (s *handler) OnDDL(header *replication.EventHeader, nextPos mysql.Position,
 }
 
 func (s *handler) OnXID(header *replication.EventHeader, nextPos mysql.Position) error {
-	logs.Infof("header  header:%+v nextPos:%v ", header, nextPos)
 	if global.Cfg().SyncType == global.SyncTypePosition {
+		logs.Infof("header  header:%+v nextPos:%v ", header, nextPos)
 		s.queue <- model.PosRequest{
 			Name:  nextPos.Name,
 			Pos:   nextPos.Pos,
@@ -141,8 +141,8 @@ func (s *handler) OnRow(e *canal.RowsEvent) error {
 }
 
 func (s *handler) OnGTID(header *replication.EventHeader, gtid mysql.GTIDSet) error {
-	logs.Infof("OnGTID  header:%+v gtid:%v ", header, gtid)
 	if global.Cfg().SyncType == global.SyncTypeGtid {
+		logs.Infof("OnGTID  header:%+v gtid:%v ", header, gtid)
 		s.queue <- model.PosRequest{
 			Gtid:  gtid.String(),
 			Force: false,
@@ -152,8 +152,8 @@ func (s *handler) OnGTID(header *replication.EventHeader, gtid mysql.GTIDSet) er
 }
 
 func (s *handler) OnPosSynced(header *replication.EventHeader, pos mysql.Position, set mysql.GTIDSet, force bool) error {
-	logs.Infof("OnPosSynced  header:%+v pos:%v set:%v force:%v", header, pos, set, force)
 	if global.Cfg().SyncType == global.SyncTypeGtid {
+		logs.Infof("OnPosSynced  header:%+v pos:%v set:%v force:%v", header, pos, set, force)
 		s.queue <- model.PosRequest{
 			Name:  pos.Name,
 			Pos:   pos.Pos,

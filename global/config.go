@@ -244,6 +244,8 @@ func checkConfig(c *Config) error {
 		c.SyncType = SyncTypeGtid
 	}
 
+	c.isReserveRawData = true
+
 	if c.DataDir == "" {
 		c.DataDir = filepath.Join(sys.CurrentDirectory(), _dataDir)
 	}

@@ -44,7 +44,6 @@ func NewPositionStorage() PositionStorage {
 	}
 
 	if global.Cfg().IsRedisStorage() {
-
 		return &redisPositionStorage{}
 	}
 

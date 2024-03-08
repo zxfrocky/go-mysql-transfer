@@ -220,7 +220,7 @@ func (s *handler) startListener() {
 				requests = requests[0:0]
 			}
 			if needSavePos && _transferService.endpointEnable.Load() {
-				logs.Infof("save position %s %d", current.Name, current.Pos)
+				logs.Infof("save position %s %d %d", current.Name, current.Pos, current.Gtid)
 				if err := _transferService.positionDao.Save(current); err != nil {
 					logs.Errorf("save sync position %s err %v, close sync", current, err)
 					_transferService.Close()

@@ -282,6 +282,10 @@ func checkConfig(c *Config) error {
 		return errors.Errorf("empty rules not allowed")
 	}
 
+	for _, rule := range c.RuleConfigs {
+		rule.ReserveRawData = true
+	}
+
 	return nil
 }
 

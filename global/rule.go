@@ -24,8 +24,8 @@ import (
 	"sync"
 	"text/template"
 
-	"github.com/juju/errors"
 	"github.com/go-mysql-org/go-mysql/schema"
+	"github.com/juju/errors"
 	"github.com/vmihailenco/msgpack"
 	"github.com/yuin/gopher-lua"
 	"github.com/yuin/gopher-lua/parse"

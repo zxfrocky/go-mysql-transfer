@@ -119,6 +119,7 @@ func (s *RocketEndpoint) Consume(from model.PosRequest, rows []*model.RowRequest
 	for _, item := range ms {
 		_, err := s.client.SendSync(context.Background(), item)
 		if err != nil {
+			logs.Errorf("rockmq SendSync err:%v", err)
 			return err
 		}
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-redis/redis/v8"
 	"go-mysql-transfer/global"
+	"go.uber.org/atomic"
 	"strings"
 )
 
@@ -11,6 +12,7 @@ type RedisCli struct {
 	IsCluster bool
 	Client    *redis.Client
 	Cluster   *redis.ClusterClient
+	closed    atomic.Bool
 }
 
 func GetRdsClient() *RedisCli {
@@ -56,4 +58,17 @@ func (cli *RedisCli) Ping() error {
 		_, err = cli.Client.Ping(context.Background()).Result()
 	}
 	return err
+}
+
+func (cli *RedisCli) Close() {
+	if !cli.closed.Load() {
+		cli.closed.Store(true)
+		if cli.Client != nil {
+			cli.Client.Close()
+		}
+
+		if cli.Cluster != nil {
+			cli.Cluster.Close()
+		}
+	}
 }

@@ -227,4 +227,8 @@ func Close() {
 	if _file != nil {
 		_file.Close()
 	}
+
+	if _rdsCli != nil {
+		_rdsCli.Close()
+	}
 }

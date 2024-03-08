@@ -203,12 +203,14 @@ func (s *TransferService) stopDump() {
 		return
 	}
 
+	s.canal.Close()
+	time.Sleep(time.Second * 3) //延迟两秒
+
 	if s.canalHandler != nil {
 		s.canalHandler.stopListener()
 		s.canalHandler = nil
 	}
 
-	s.canal.Close()
 	s.wg.Wait()
 
 	log.Println("dumper stopped")

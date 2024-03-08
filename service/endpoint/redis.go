@@ -36,20 +36,15 @@ import (
 )
 
 type RedisEndpoint struct {
-	isCluster bool
-	client    *redis.Client
-	cluster   *redis.ClusterClient
+	rdsCli    *common.RedisCli
 	retryLock sync.Mutex
 }
 
 func newRedisEndpoint() *RedisEndpoint {
 	//cfg := global.Cfg()
-	r := &RedisEndpoint{}
-
-	rdsCli := common.GetRdsClient()
-	r.client = rdsCli.Client
-	r.cluster = rdsCli.Cluster
-	r.isCluster = rdsCli.IsCluster
+	r := &RedisEndpoint{
+		rdsCli: common.GetRdsClient(),
+	}
 
 	/*
 		list := strings.Split(cfg.RedisAddr, ",")
@@ -85,22 +80,34 @@ func (s *RedisEndpoint) Connect() error {
 	return s.Ping()
 }
 
+func (s *RedisEndpoint) isCluster() bool {
+	return s.rdsCli.IsCluster
+}
+
+func (s *RedisEndpoint) cluster() *redis.ClusterClient {
+	return s.rdsCli.Cluster
+}
+
+func (s *RedisEndpoint) client() *redis.Client {
+	return s.rdsCli.Client
+}
+
 func (s *RedisEndpoint) Ping() error {
 	var err error
-	if s.isCluster {
-		_, err = s.cluster.Ping(context.Background()).Result()
+	if s.isCluster() {
+		_, err = s.cluster().Ping(context.Background()).Result()
 	} else {
-		_, err = s.client.Ping(context.Background()).Result()
+		_, err = s.client().Ping(context.Background()).Result()
 	}
 	return err
 }
 
 func (s *RedisEndpoint) pipe() redis.Pipeliner {
 	var pipe redis.Pipeliner
-	if s.isCluster {
-		pipe = s.cluster.Pipeline()
+	if s.isCluster() {
+		pipe = s.cluster().Pipeline()
 	} else {
-		pipe = s.client.Pipeline()
+		pipe = s.client().Pipeline()
 	}
 	return pipe
 }
@@ -334,7 +341,7 @@ func (s *RedisEndpoint) encodeSortedSetScoreField(req *model.RowRequest, rule *g
 }
 
 func (s *RedisEndpoint) Close() {
-	if s.client != nil {
-		s.client.Close()
+	if s.rdsCli != nil {
+		s.rdsCli.Close()
 	}
 }

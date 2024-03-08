@@ -19,12 +19,13 @@ package endpoint
 
 import (
 	"bytes"
+	"context"
+	"github.com/go-redis/redis/v8"
+	"go-mysql-transfer/service/common"
 	"log"
-	"strings"
 	"sync"
 
 	"github.com/go-mysql-org/go-mysql/canal"
-	"github.com/go-redis/redis"
 	"github.com/pingcap/errors"
 	"go-mysql-transfer/global"
 	"go-mysql-transfer/metrics"
@@ -42,33 +43,40 @@ type RedisEndpoint struct {
 }
 
 func newRedisEndpoint() *RedisEndpoint {
-	cfg := global.Cfg()
+	//cfg := global.Cfg()
 	r := &RedisEndpoint{}
 
-	list := strings.Split(cfg.RedisAddr, ",")
-	if len(list) == 1 {
-		r.client = redis.NewClient(&redis.Options{
-			Addr:     cfg.RedisAddr,
-			Password: cfg.RedisPass,
-			DB:       cfg.RedisDatabase,
-		})
-	} else {
-		if cfg.RedisGroupType == global.RedisGroupTypeSentinel {
-			r.client = redis.NewFailoverClient(&redis.FailoverOptions{
-				MasterName:    cfg.RedisMasterName,
-				SentinelAddrs: list,
-				Password:      cfg.RedisPass,
-				DB:            cfg.RedisDatabase,
-			})
-		}
-		if cfg.RedisGroupType == global.RedisGroupTypeCluster {
-			r.isCluster = true
-			r.cluster = redis.NewClusterClient(&redis.ClusterOptions{
-				Addrs:    list,
+	rdsCli := common.GetRdsClient()
+	r.client = rdsCli.Client
+	r.cluster = rdsCli.Cluster
+	r.isCluster = rdsCli.IsCluster
+
+	/*
+		list := strings.Split(cfg.RedisAddr, ",")
+		if len(list) == 1 {
+			r.client = redis.NewClient(&redis.Options{
+				Addr:     cfg.RedisAddr,
 				Password: cfg.RedisPass,
+				DB:       cfg.RedisDatabase,
 			})
+		} else {
+			if cfg.RedisGroupType == global.RedisGroupTypeSentinel {
+				r.client = redis.NewFailoverClient(&redis.FailoverOptions{
+					MasterName:    cfg.RedisMasterName,
+					SentinelAddrs: list,
+					Password:      cfg.RedisPass,
+					DB:            cfg.RedisDatabase,
+				})
+			}
+			if cfg.RedisGroupType == global.RedisGroupTypeCluster {
+				r.isCluster = true
+				r.cluster = redis.NewClusterClient(&redis.ClusterOptions{
+					Addrs:    list,
+					Password: cfg.RedisPass,
+				})
+			}
 		}
-	}
+	*/
 
 	return r
 }
@@ -80,9 +88,9 @@ func (s *RedisEndpoint) Connect() error {
 func (s *RedisEndpoint) Ping() error {
 	var err error
 	if s.isCluster {
-		_, err = s.cluster.Ping().Result()
+		_, err = s.cluster.Ping(context.Background()).Result()
 	} else {
-		_, err = s.client.Ping().Result()
+		_, err = s.client.Ping(context.Background()).Result()
 	}
 	return err
 }
@@ -134,7 +142,7 @@ func (s *RedisEndpoint) Consume(from model.PosRequest, rows []*model.RowRequest)
 		}
 	}
 
-	_, err := pipe.Exec()
+	_, err := pipe.Exec(context.Background())
 	if err != nil {
 		return err
 	}
@@ -171,7 +179,7 @@ func (s *RedisEndpoint) Stock(rows []*model.RowRequest) int64 {
 	}
 
 	var counter int64
-	res, err := pipe.Exec()
+	res, err := pipe.Exec(context.Background())
 	if err != nil {
 		logs.Error(err.Error())
 	}
@@ -221,47 +229,48 @@ func (s *RedisEndpoint) ruleRespond(row *model.RowRequest, rule *global.Rule) *m
 }
 
 func (s *RedisEndpoint) preparePipe(resp *model.RedisRespond, pipe redis.Cmdable) {
+	ctx := context.Background()
 	switch resp.Structure {
 	case global.RedisStructureString:
 		if resp.Action == canal.DeleteAction {
-			pipe.Del(resp.Key)
+			pipe.Del(ctx, resp.Key)
 		} else {
-			pipe.Set(resp.Key, resp.Val, 0)
+			pipe.Set(ctx, resp.Key, resp.Val, 0)
 		}
 	case global.RedisStructureHash:
 		if resp.Action == canal.DeleteAction {
-			pipe.HDel(resp.Key, resp.Field)
+			pipe.HDel(ctx, resp.Key, resp.Field)
 		} else {
-			pipe.HSet(resp.Key, resp.Field, resp.Val)
+			pipe.HSet(ctx, resp.Key, resp.Field, resp.Val)
 		}
 	case global.RedisStructureList:
 		if resp.Action == canal.DeleteAction {
-			pipe.LRem(resp.Key, 0, resp.Val)
+			pipe.LRem(context.Background(), resp.Key, 0, resp.Val)
 		} else if resp.Action == canal.UpdateAction {
-			pipe.LRem(resp.Key, 0, resp.OldVal)
-			pipe.RPush(resp.Key, resp.Val)
+			pipe.LRem(ctx, resp.Key, 0, resp.OldVal)
+			pipe.RPush(ctx, resp.Key, resp.Val)
 		} else {
-			pipe.RPush(resp.Key, resp.Val)
+			pipe.RPush(ctx, resp.Key, resp.Val)
 		}
 	case global.RedisStructureSet:
 		if resp.Action == canal.DeleteAction {
-			pipe.SRem(resp.Key, resp.Val)
+			pipe.SRem(ctx, resp.Key, resp.Val)
 		} else if resp.Action == canal.UpdateAction {
-			pipe.SRem(resp.Key, 0, resp.OldVal)
-			pipe.SAdd(resp.Key, resp.Val)
+			pipe.SRem(ctx, resp.Key, 0, resp.OldVal)
+			pipe.SAdd(ctx, resp.Key, resp.Val)
 		} else {
-			pipe.SAdd(resp.Key, resp.Val)
+			pipe.SAdd(ctx, resp.Key, resp.Val)
 		}
 	case global.RedisStructureSortedSet:
 		if resp.Action == canal.DeleteAction {
-			pipe.ZRem(resp.Key, resp.Val)
+			pipe.ZRem(ctx, resp.Key, resp.Val)
 		} else if resp.Action == canal.UpdateAction {
-			pipe.ZRem(resp.Key, 0, resp.OldVal)
+			pipe.ZRem(ctx, resp.Key, 0, resp.OldVal)
 			val := redis.Z{Score: resp.Score, Member: resp.Val}
-			pipe.ZAdd(resp.Key, val)
+			pipe.ZAdd(ctx, resp.Key, &val)
 		} else {
 			val := redis.Z{Score: resp.Score, Member: resp.Val}
-			pipe.ZAdd(resp.Key, val)
+			pipe.ZAdd(ctx, resp.Key, &val)
 		}
 	}
 }

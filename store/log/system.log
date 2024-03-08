@@ -1,0 +1,25 @@
+2024-03-08 11:10:09	info	firstLoadPosition pos:{Name:mysql-bin.000007 Pos:4468 Gtid:98dff9c0-be51-11ee-a8dd-0242ac110002:1-22 Force:false}
+2024-03-08 11:10:09	info	OnRotate  header:&{Timestamp:0 EventType:RotateEvent ServerID:1 EventSize:43 LogPos:0 Flags:32} rotateEvent:&{Position:4 NextLogName:[109 121 115 113 108 45 98 105 110 46 48 48 48 48 48 55]}
+2024-03-08 11:10:09	info	OnPosSynced  header:&{Timestamp:0 EventType:RotateEvent ServerID:1 EventSize:43 LogPos:0 Flags:32} pos:(mysql-bin.000007, 4) set:98dff9c0-be51-11ee-a8dd-0242ac110002:1-22 force:true
+2024-03-08 11:10:09	info	save position mysql-bin.000007 4
+2024-03-08 11:27:58	error	http: Server closed
+2024-03-08 11:27:58	info	Canal is Closed
+2024-03-08 11:27:58	info	OnPosSynced  header:<nil> pos:(mysql-bin.000007, 4) set:98dff9c0-be51-11ee-a8dd-0242ac110002:1-22 force:true
+2024-03-08 11:28:01	info	firstLoadPosition pos:{Name:mysql-bin.000007 Pos:4468 Gtid:98dff9c0-be51-11ee-a8dd-0242ac110002:1-22 Force:false}
+2024-03-08 11:28:01	info	OnRotate  header:&{Timestamp:0 EventType:RotateEvent ServerID:1 EventSize:43 LogPos:0 Flags:32} rotateEvent:&{Position:4 NextLogName:[109 121 115 113 108 45 98 105 110 46 48 48 48 48 48 55]}
+2024-03-08 11:28:01	info	OnPosSynced  header:&{Timestamp:0 EventType:RotateEvent ServerID:1 EventSize:43 LogPos:0 Flags:32} pos:(mysql-bin.000007, 4) set:98dff9c0-be51-11ee-a8dd-0242ac110002:1-22 force:true
+2024-03-08 11:28:01	info	save position mysql-bin.000007 4
+2024-03-08 11:28:39	error	http: Server closed
+2024-03-08 11:28:39	info	Canal is Closed
+2024-03-08 11:28:39	info	OnPosSynced  header:<nil> pos:(mysql-bin.000007, 4) set:98dff9c0-be51-11ee-a8dd-0242ac110002:1-22 force:true
+2024-03-08 11:28:53	info	firstLoadPosition pos:{Name:mysql-bin.000007 Pos:4468 Gtid:98dff9c0-be51-11ee-a8dd-0242ac110002:1-22 Force:false}
+2024-03-08 11:29:13	info	OnRotate  header:&{Timestamp:0 EventType:RotateEvent ServerID:1 EventSize:43 LogPos:0 Flags:32} rotateEvent:&{Position:4 NextLogName:[109 121 115 113 108 45 98 105 110 46 48 48 48 48 48 55]}
+2024-03-08 11:29:13	info	OnPosSynced  header:&{Timestamp:0 EventType:RotateEvent ServerID:1 EventSize:43 LogPos:0 Flags:32} pos:(mysql-bin.000007, 4) set:98dff9c0-be51-11ee-a8dd-0242ac110002:1-22 force:true
+2024-03-08 11:29:13	info	save position mysql-bin.000007 4
+2024-03-08 11:29:19	info	firstLoadPosition pos:{Name:mysql-bin.000007 Pos:4468 Gtid:98dff9c0-be51-11ee-a8dd-0242ac110002:1-22 Force:false}
+2024-03-08 11:29:19	info	OnRotate  header:&{Timestamp:0 EventType:RotateEvent ServerID:1 EventSize:43 LogPos:0 Flags:32} rotateEvent:&{Position:4 NextLogName:[109 121 115 113 108 45 98 105 110 46 48 48 48 48 48 55]}
+2024-03-08 11:29:19	info	OnPosSynced  header:&{Timestamp:0 EventType:RotateEvent ServerID:1 EventSize:43 LogPos:0 Flags:32} pos:(mysql-bin.000007, 4) set:98dff9c0-be51-11ee-a8dd-0242ac110002:1-22 force:true
+2024-03-08 11:29:19	info	save position mysql-bin.000007 4
+2024-03-08 11:29:40	error	http: Server closed
+2024-03-08 11:29:40	info	Canal is Closed
+2024-03-08 11:29:40	info	OnPosSynced  header:<nil> pos:(mysql-bin.000007, 4) set:98dff9c0-be51-11ee-a8dd-0242ac110002:1-22 force:true

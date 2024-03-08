@@ -77,6 +77,7 @@ type Config struct {
 	SyncType        string `yaml:"sync_type"`         //gtid or position
 	FirstSyncLatest bool   `yaml:"first_sync_latest"` //第一次是否从最新位置同步
 	UseFileStorage  bool   `yaml:"use_file_storage"`  //是否用文件存储pos
+	UseRedisStorage bool   `yaml:"use_redis_storage"` //是否用redis存储pos
 
 	DumpExec       string `yaml:"mysqldump"`
 	SkipMasterData bool   `yaml:"skip_master_data"`
@@ -434,6 +435,10 @@ func (c *Config) IsEtcd() bool {
 
 func (c *Config) IsFile() bool {
 	return c.UseFileStorage
+}
+
+func (c *Config) IsRedisStorage() bool {
+	return c.UseRedisStorage
 }
 
 func (c *Config) IsRedis() bool {

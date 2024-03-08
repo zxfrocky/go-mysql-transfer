@@ -7,7 +7,6 @@ require (
 	github.com/apache/rocketmq-client-go/v2 v2.1.2
 	github.com/gin-gonic/gin v1.9.2-0.20240219023448-ecdbbbe9483d
 	github.com/go-mysql-org/go-mysql v1.7.0
-	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/json-iterator/go v1.1.12
 	github.com/juju/errors v1.0.0
 	github.com/layeh/gopher-json v0.0.0-20201124131017-552bb3c4c3bf
@@ -121,6 +120,7 @@ require (
 )
 
 require (
+	github.com/go-redis/redis/v8 v8.11.5
 	go.etcd.io/bbolt v1.3.4
 	go.etcd.io/etcd v0.5.0-alpha.5.0.20200425165423-262c93980547
 )
@@ -129,10 +129,11 @@ require (
 	github.com/chenzhuoyu/iasm v0.9.1 // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.0.0 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20230822172742-b8732ec3820d // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
 )
 
-
 replace go.etcd.io/bbolt => github.com/coreos/bbolt v1.3.9
+
 replace google.golang.org/grpc => google.golang.org/grpc v1.29.1

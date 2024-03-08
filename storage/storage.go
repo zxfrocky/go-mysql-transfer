@@ -20,6 +20,7 @@ package storage
 import (
 	"errors"
 	"fmt"
+	"go-mysql-transfer/service/common"
 	"os"
 	"path/filepath"
 	"strings"
@@ -51,6 +52,7 @@ var (
 	_positionBucket = []byte("Position")
 	_fixPositionId  = byteutil.Uint64ToBytes(uint64(1))
 
+	_rdsCli         *common.RedisCli
 	_file           *os.File
 	_bolt           *bbolt.DB
 	_zkConn         *zk.Conn
@@ -76,6 +78,10 @@ func Initialize() error {
 
 	if global.Cfg().IsFile() {
 		if err := initFilePosStorage(); err != nil {
+			return err
+		}
+	} else if global.Cfg().IsRedisStorage() {
+		if err := initRedisPosStorage(); err != nil {
 			return err
 		}
 	} else {
@@ -176,16 +182,15 @@ func initFilePosStorage() error {
 		return errors.New(fmt.Sprintf("open file: %s", err.Error()))
 	}
 
-	/*
-		err = bolt.Update(func(tx *bbolt.Tx) error {
-			tx.CreateBucketIfNotExists(_positionBucket)
-			return nil
-		})
-	*/
-
 	_file = file
 
 	return err
+}
+
+func initRedisPosStorage() error {
+	_rdsCli = common.GetRdsClient()
+	_rdsCli.Connect()
+	return nil
 }
 
 func ZKConn() *zk.Conn {
@@ -217,5 +222,9 @@ func Close() {
 	}
 	if _etcdConn != nil {
 		_etcdConn.Close()
+	}
+
+	if _file != nil {
+		_file.Close()
 	}
 }

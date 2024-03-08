@@ -43,5 +43,10 @@ func NewPositionStorage() PositionStorage {
 		return &filePositionStorage{}
 	}
 
+	if global.Cfg().IsRedisStorage() {
+
+		return &redisPositionStorage{}
+	}
+
 	return &boltPositionStorage{}
 }

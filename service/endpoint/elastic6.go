@@ -19,7 +19,6 @@ package endpoint
 
 import (
 	"context"
-	"log"
 	"strings"
 	"sync"
 
@@ -202,7 +201,7 @@ func (s *Elastic6Endpoint) Consume(from model.PosRequest, rows []*model.RowReque
 			kvm := rowMap(row, rule, true)
 			ls, err := luaengine.DoESOps(kvm, row.Action, rule)
 			if err != nil {
-				log.Println("Lua 脚本执行失败!!! ,详情请参见日志")
+				logs.Infof("Lua 脚本执行失败!!! ,详情请参见日志")
 				return errors.Errorf("lua 脚本执行失败 : %s ", errors.ErrorStack(err))
 			}
 			for _, resp := range ls {
@@ -224,7 +223,7 @@ func (s *Elastic6Endpoint) Consume(from model.PosRequest, rows []*model.RowReque
 
 	r, err := bulk.Do(context.Background())
 	if err != nil {
-		log.Println(err.Error())
+		logs.Errorf(err.Error())
 		return err
 	}
 
@@ -238,7 +237,7 @@ func (s *Elastic6Endpoint) Consume(from model.PosRequest, rows []*model.RowReque
 			if f.Error != nil {
 				reason = f.Error.Reason
 			}
-			log.Println(reason)
+			logs.Infof(reason)
 			return errors.New(reason)
 		}
 	}

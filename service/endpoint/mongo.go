@@ -19,7 +19,6 @@ package endpoint
 
 import (
 	"context"
-	"log"
 	"strings"
 	"sync"
 
@@ -228,7 +227,6 @@ func (s *MongoEndpoint) Stock(rows []*model.RowRequest) int64 {
 			kvm := rowMap(row, rule, true)
 			ls, err := luaengine.DoMongoOps(kvm, row.Action, rule)
 			if err != nil {
-				log.Println("Lua 脚本执行失败!!! ,详情请参见日志")
 				logs.Errorf("lua 脚本执行失败 : %s ", errors.ErrorStack(err))
 				expect = false
 				break

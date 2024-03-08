@@ -19,7 +19,6 @@ package election
 
 import (
 	"fmt"
-	"log"
 	"sync"
 
 	"github.com/samuel/go-zookeeper/zk"
@@ -98,14 +97,14 @@ func (s *zkElection) beLeader() {
 	s.selected.Store(true)
 	s.leader.Store(global.CurrentNode())
 	s.informCh <- s.selected.Load()
-	log.Println("the current node is the master")
+	logs.Infof("the current node is the master")
 }
 
 func (s *zkElection) beFollower(leader string) {
 	s.selected.Store(false)
 	s.leader.Store(leader)
 	s.informCh <- s.selected.Load()
-	log.Println(fmt.Sprintf("The current node is the follower, master node is : %s", leader))
+	logs.Infof(fmt.Sprintf("The current node is the follower, master node is : %s", leader))
 }
 
 func (s *zkElection) startConnectionWatchTask() {
@@ -159,7 +158,7 @@ func (s *zkElection) startNodeWatchTask() {
 
 func (s *zkElection) downgrading() {
 	if !s.downgraded.Load() {
-		log.Println("Lost contact with zookeeper, The current node degraded to Follower")
+		logs.Infof("Lost contact with zookeeper, The current node degraded to Follower")
 		s.downgraded.Store(true)
 		s.beFollower("")
 	}

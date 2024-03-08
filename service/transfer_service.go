@@ -21,7 +21,6 @@ import (
 	"database/sql"
 	"fmt"
 	"go-mysql-transfer/model"
-	"log"
 	"regexp"
 	"strconv"
 	"sync"
@@ -127,13 +126,12 @@ func (s *TransferService) run() error {
 	s.wg.Add(1)
 	go func(pos model.PosRequest) {
 		s.canalEnable.Store(true)
-		log.Println(fmt.Sprintf("transfer run from position(%s %d %s)", pos.Name, pos.Pos, pos.Gtid))
+		logs.Infof(fmt.Sprintf("transfer run from position(%s %d %s)", pos.Name, pos.Pos, pos.Gtid))
 
 		if global.Cfg().SyncType == global.SyncTypePosition {
 			p := mysql.Position{Name: pos.Name, Pos: pos.Pos}
 			if err := s.canal.RunFrom(p); err != nil {
-				log.Println(fmt.Sprintf("start transfer : %v", err))
-				logs.Errorf("canal : %v", errors.ErrorStack(err))
+				logs.Errorf("start transfer canal err : %v", errors.ErrorStack(err))
 				if s.canalHandler != nil {
 					s.canalHandler.stopListener()
 				}
@@ -142,8 +140,7 @@ func (s *TransferService) run() error {
 		} else {
 			set, _ := mysql.ParseGTIDSet(global.Cfg().Flavor, pos.Gtid)
 			if err := s.canal.StartFromGTID(set); err != nil {
-				log.Println(fmt.Sprintf("start transfer : %v", err))
-				logs.Errorf("canal : %v", errors.ErrorStack(err))
+				logs.Errorf("start transfer canal : %v", errors.ErrorStack(err))
 				if s.canalHandler != nil {
 					s.canalHandler.stopListener()
 				}
@@ -213,7 +210,7 @@ func (s *TransferService) stopDump() {
 
 	s.wg.Wait()
 
-	log.Println("dumper stopped")
+	logs.Infof("dumper stopped")
 }
 
 func (s *TransferService) Close() {
@@ -366,8 +363,7 @@ func (s *TransferService) startLoop() {
 				if !s.endpointEnable.Load() {
 					err := s.endpoint.Ping()
 					if err != nil {
-						log.Println("destination not available,see the log file for details")
-						logs.Error(err.Error())
+						logs.Errorf("startLoop endpoint Ping %v", err.Error())
 					} else {
 						s.endpointEnable.Store(true)
 						if global.Cfg().IsRabbitmq() {

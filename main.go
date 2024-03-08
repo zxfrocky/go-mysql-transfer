@@ -21,7 +21,7 @@ import (
 	"flag"
 	"fmt"
 	"go-mysql-transfer/model"
-	"log"
+	"go-mysql-transfer/util/logs"
 	"os"
 	"os/signal"
 	"regexp"
@@ -138,7 +138,7 @@ func main() {
 	s := make(chan os.Signal, 1)
 	signal.Notify(s, os.Kill, os.Interrupt, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 	sin := <-s
-	log.Printf("application stoped，signal: %s \n", sin.String())
+	logs.Infof("application stoped，signal: %s \n", sin.String())
 
 	web.Close()
 	service.Close()

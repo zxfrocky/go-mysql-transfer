@@ -10,8 +10,10 @@ use_file_storage: true
 
 #系统相关配置
 #data_dir: D:\\transfer #应用产生的数据存放地址，包括日志、缓存数据等，默认当前运行目录下store文件夹
-#logger:
-#  level: info #日志级别；支持：debug|info|warn|error，默认info
+logger:
+  level: info #日志级别；支持：debug|info|warn|error，默认info
+  store: log
+  file_name: transfer.log
 
 #maxprocs: 50 #并发协（线）程数量，默认为: CPU核数*2；一般情况下不需要设置此项
 #bulk_size: 1000 #每批处理数量，不写默认100，可以根据带宽、机器性能等调整;如果是全量数据初始化时redis建议设为1000，其他接收端酌情调大

@@ -20,7 +20,6 @@ package election
 import (
 	"context"
 	"fmt"
-	"log"
 	"sync"
 	"time"
 
@@ -159,12 +158,12 @@ func (s *etcdElection) beLeader() {
 	s.selected.Store(true)
 	s.leader.Store(global.CurrentNode())
 	s.informCh <- s.selected.Load()
-	log.Println("the current node is the master")
+	logs.Infof("the current node is the master")
 }
 
 func (s *etcdElection) beFollower(leader string) {
 	s.selected.Store(false)
 	s.informCh <- s.selected.Load()
 	s.leader.Store(leader)
-	log.Println(fmt.Sprintf("The current node is the follower, master node is : %s", s.leader.Load()))
+	logs.Infof(fmt.Sprintf("The current node is the follower, master node is : %s", s.leader.Load()))
 }

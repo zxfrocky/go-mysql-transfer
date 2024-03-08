@@ -20,7 +20,6 @@ package service
 import (
 	"github.com/juju/errors"
 	"go-mysql-transfer/metrics"
-	"log"
 	"time"
 
 	"github.com/go-mysql-org/go-mysql/canal"
@@ -233,6 +232,6 @@ func (s *handler) startListener() {
 }
 
 func (s *handler) stopListener() {
-	log.Println("transfer stop")
+	logs.Infof("transfer stop")
 	s.stop <- struct{}{}
 }

@@ -20,7 +20,6 @@ package endpoint
 import (
 	"context"
 	"github.com/go-mysql-org/go-mysql/canal"
-	"log"
 	"strings"
 	"sync"
 
@@ -99,7 +98,7 @@ func (s *RocketEndpoint) Consume(from model.PosRequest, rows []*model.RowRequest
 		if rule.LuaEnable() {
 			ls, err := s.buildMessages(row, rule)
 			if err != nil {
-				log.Println("Lua 脚本执行失败!!! ,详情请参见日志")
+				logs.Infof("Lua 脚本执行失败!!! ,详情请参见日志")
 				return errors.Errorf("lua 脚本执行失败 : %s ", errors.ErrorStack(err))
 			}
 			ms = append(ms, ls...)

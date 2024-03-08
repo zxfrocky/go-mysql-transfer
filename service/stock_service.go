@@ -19,10 +19,9 @@ package service
 
 import (
 	"fmt"
-	"github.com/juju/errors"
 	"github.com/go-mysql-org/go-mysql/canal"
+	"github.com/juju/errors"
 	"go.uber.org/atomic"
-	"log"
 	"regexp"
 	"strings"
 	"sync"
@@ -81,13 +80,13 @@ func (s *StockService) Run() error {
 
 	endpoint := endpoint.NewEndpoint(s.canal)
 	if err := endpoint.Connect(); err != nil {
-		log.Println(err.Error())
+		logs.Infof(err.Error())
 		return errors.Trace(err)
 	}
 	s.endpoint = endpoint
 
 	startTime := dates.NowMillisecond()
-	log.Println(fmt.Sprintf("bulk size: %d", global.Cfg().BulkSize))
+	logs.Infof(fmt.Sprintf("bulk size: %d", global.Cfg().BulkSize))
 	for _, rule := range global.RuleInsList() {
 		if rule.OrderByColumn == "" {
 			return errors.New("empty order_by_column not allowed")
@@ -95,7 +94,7 @@ func (s *StockService) Run() error {
 
 		exportColumns := s.exportColumns(rule)
 		fullName := fmt.Sprintf("%s.%s", rule.Schema, rule.Table)
-		log.Println(fmt.Sprintf("开始导出 %s", fullName))
+		logs.Infof(fmt.Sprintf("开始导出 %s", fullName))
 
 		res, err := s.canal.Execute(fmt.Sprintf("select count(1) from %s", fullName))
 		if err != nil {
@@ -103,7 +102,7 @@ func (s *StockService) Run() error {
 		}
 		totalRow, err := res.GetInt(0, 0)
 		s.totalRows[fullName] = totalRow
-		log.Println(fmt.Sprintf("%s 共 %d 条数据", fullName, totalRow))
+		logs.Infof(fmt.Sprintf("%s 共 %d 条数据", fullName, totalRow))
 
 		s.counter[fullName] = 0
 
@@ -213,7 +212,7 @@ func (s *StockService) imports(fullName string, requests []*model.RowRequest) {
 
 	succeeds := s.endpoint.Stock(requests)
 	count := s.incCounter(fullName, succeeds)
-	log.Println(fmt.Sprintf("%s 导入数据 %d 条", fullName, count))
+	logs.Infof(fmt.Sprintf("%s 导入数据 %d 条", fullName, count))
 }
 
 func (s *StockService) exportColumns(rule *global.Rule) string {

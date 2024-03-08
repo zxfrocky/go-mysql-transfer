@@ -20,7 +20,6 @@ package global
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -319,10 +318,10 @@ func checkClusterConfig(c *Config) error {
 	}
 
 	if c.IsZk() {
-		log.Println("cluster by Zookeeper")
+		logs.Infof("cluster by Zookeeper")
 	}
 	if c.IsEtcd() {
-		log.Println("cluster by Etcd")
+		logs.Infof("cluster by Etcd")
 	}
 
 	return nil

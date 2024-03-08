@@ -19,7 +19,6 @@ package endpoint
 
 import (
 	"context"
-	"log"
 	"sync"
 
 	"github.com/go-mysql-org/go-mysql/canal"
@@ -198,7 +197,7 @@ func (s *Elastic7Endpoint) Consume(from model.PosRequest, rows []*model.RowReque
 			kvm := rowMap(row, rule, true)
 			ls, err := luaengine.DoESOps(kvm, row.Action, rule)
 			if err != nil {
-				log.Println("Lua 脚本执行失败!!! ,详情请参见日志")
+				logs.Errorf("Lua 脚本执行失败!!! ,详情请参见日志")
 				return errors.Errorf("lua 脚本执行失败 : %s ", errors.ErrorStack(err))
 			}
 			for _, resp := range ls {
@@ -233,7 +232,7 @@ func (s *Elastic7Endpoint) Consume(from model.PosRequest, rows []*model.RowReque
 			if f.Error != nil {
 				reason = f.Error.Reason
 			}
-			log.Println(reason)
+			logs.Infof("reason:%v", reason)
 			return errors.New(reason)
 		}
 	}

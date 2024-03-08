@@ -18,8 +18,6 @@
 package endpoint
 
 import (
-	"log"
-
 	"github.com/pingcap/errors"
 	"go-mysql-transfer/global"
 	"go-mysql-transfer/metrics"
@@ -55,7 +53,7 @@ func (s *ScriptEndpoint) Consume(from model.PosRequest, rows []*model.RowRequest
 		kvm := rowMap(row, rule, true)
 		err := luaengine.DoScript(kvm, row.Action, rule)
 		if err != nil {
-			log.Println("Lua 脚本执行失败!!! ,详情请参见日志")
+			logs.Errorf("Lua 脚本执行失败!!! ,详情请参见日志")
 			return errors.Errorf("Lua 脚本执行失败 : %s ", errors.ErrorStack(err))
 		}
 		kvm = nil

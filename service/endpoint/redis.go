@@ -22,7 +22,6 @@ import (
 	"context"
 	"github.com/go-redis/redis/v8"
 	"go-mysql-transfer/service/common"
-	"log"
 	"sync"
 
 	"github.com/go-mysql-org/go-mysql/canal"
@@ -134,7 +133,7 @@ func (s *RedisEndpoint) Consume(from model.PosRequest, rows []*model.RowRequest)
 				ls, err = luaengine.DoRedisOps(kvm, nil, row.Action, rule)
 			}
 			if err != nil {
-				log.Println("Lua 脚本执行失败!!! ,详情请参见日志")
+				logs.Infof("Lua 脚本执行失败!!! ,详情请参见日志")
 				return errors.Errorf("Lua 脚本执行失败 : %s ", errors.ErrorStack(err))
 			}
 			for _, resp := range ls {

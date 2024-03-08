@@ -18,10 +18,9 @@
 package service
 
 import (
-	"log"
-
 	"go-mysql-transfer/global"
 	"go-mysql-transfer/metrics"
+	"go-mysql-transfer/util/logs"
 )
 
 type ClusterService struct {
@@ -29,7 +28,7 @@ type ClusterService struct {
 }
 
 func (s *ClusterService) boot() error {
-	log.Println("start master election")
+	logs.Infof("start master election")
 	err := _electionService.Elect()
 	if err != nil {
 		return err

@@ -5,7 +5,6 @@ import (
 	"go-mysql-transfer/service"
 	"go-mysql-transfer/util/dates"
 	"go-mysql-transfer/util/nets"
-	"log"
 	"net/http"
 	"path"
 	"strconv"
@@ -52,7 +51,7 @@ func Start() error {
 		return err
 	}
 
-	log.Println(fmt.Sprintf("Web Admin Listen At %s", listen))
+	logs.Infof(fmt.Sprintf("Web Admin Listen At %s", listen))
 	go func() {
 		if err := _server.ListenAndServe(); err != nil {
 			logs.Error(err.Error())
@@ -133,6 +132,6 @@ func Close() {
 
 	err := _server.Shutdown(nil)
 	if err != nil {
-		log.Println(err.Error())
+		logs.Infof(err.Error())
 	}
 }

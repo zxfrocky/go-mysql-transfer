@@ -2,7 +2,6 @@ package global
 
 import (
 	"fmt"
-	"log"
 	"runtime"
 	"strconv"
 	"syscall"
@@ -70,7 +69,7 @@ func Initialize(configPath string) error {
 	_bootTime = time.Now()
 	_pid = syscall.Getpid()
 
-	if _config.IsCluster(){
+	if _config.IsCluster() {
 		if _config.EnableWebAdmin {
 			_currentNode = _config.Cluster.BindIp + ":" + strconv.Itoa(_config.WebAdminPort)
 		} else {
@@ -78,10 +77,10 @@ func Initialize(configPath string) error {
 		}
 	}
 
-	log.Println(fmt.Sprintf("process id: %d", _pid))
-	log.Println(fmt.Sprintf("GOMAXPROCS :%d", _config.Maxprocs))
-	log.Println(fmt.Sprintf("source  %s(%s)", _config.Flavor, _config.Addr))
-	log.Println(fmt.Sprintf("destination %s", _config.Destination()))
+	logs.Infof(fmt.Sprintf("process id: %d", _pid))
+	logs.Infof(fmt.Sprintf("GOMAXPROCS :%d", _config.Maxprocs))
+	logs.Infof(fmt.Sprintf("source  %s(%s)", _config.Flavor, _config.Addr))
+	logs.Infof(fmt.Sprintf("destination %s", _config.Destination()))
 
 	return nil
 }

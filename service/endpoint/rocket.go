@@ -247,7 +247,7 @@ func (s *RocketEndpoint) buildMessages(req *model.RowRequest, rule *global.Rule)
 			Body:  resp.ByteArray,
 		}
 		m.WithShardingKey(shardingKey)
-		logs.Infof("topic: %s, message: %s", m.Topic, string(m.Body))
+		logs.Infof("topic: %s, message: %s shardingKey:%s", m.Topic, string(m.Body), shardingKey)
 		ms = append(ms, m)
 	}
 
@@ -275,8 +275,6 @@ func (s *RocketEndpoint) buildMessage(req *model.RowRequest, rule *global.Rule) 
 	}
 	shardingKey := fmt.Sprintf("%v", kvm[keyStr])
 
-	logs.Infof("shardingKey:%v", shardingKey)
-
 	body, err := json.Marshal(resp)
 	if err != nil {
 		return nil, err
@@ -289,7 +287,7 @@ func (s *RocketEndpoint) buildMessage(req *model.RowRequest, rule *global.Rule) 
 
 	m.WithShardingKey(shardingKey)
 
-	logs.Infof("topic: %s, message: %s", m.Topic, string(m.Body))
+	logs.Infof("topic: %s, message: %s shardingKey:%s", m.Topic, string(m.Body), shardingKey)
 
 	return m, nil
 }

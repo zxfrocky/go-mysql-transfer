@@ -7,6 +7,7 @@ slave_id: 1001 #slave ID
 flavor: mysql #mysql or mariadb,默认mysql
 first_sync_latest: true
 use_file_storage: true
+rockmq_select: 0 #0:hash 1:轮训
 
 #系统相关配置
 #data_dir: D:\\transfer #应用产生的数据存放地址，包括日志、缓存数据等，默认当前运行目录下store文件夹
@@ -84,6 +85,7 @@ rule:
   -
     schema: cloudnetbar #数据库名称
     table: account #表名称
+    key: id #主键
     #order_by_column: id #排序字段，存量数据同步时不能为空
     #column_lower_case:false #列名称转为小写,默认为false
     #column_upper_case:false#列名称转为大写,默认为false

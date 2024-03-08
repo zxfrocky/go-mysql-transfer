@@ -77,6 +77,7 @@ type Config struct {
 	FirstSyncLatest bool   `yaml:"first_sync_latest"` //第一次是否从最新位置同步
 	UseFileStorage  bool   `yaml:"use_file_storage"`  //是否用文件存储pos
 	UseRedisStorage bool   `yaml:"use_redis_storage"` //是否用redis存储pos
+	RockmqSelect    int    `yaml:"rockmq_select"`     //0:hash 1:roundbin
 
 	DumpExec       string `yaml:"mysqldump"`
 	SkipMasterData bool   `yaml:"skip_master_data"`

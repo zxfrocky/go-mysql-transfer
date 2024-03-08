@@ -19,6 +19,7 @@ package endpoint
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-mysql-org/go-mysql/canal"
 	"strings"
 	"sync"
@@ -63,6 +64,12 @@ func newRocketEndpoint() *RocketEndpoint {
 			AccessKey: cfg.RocketmqAccessKey,
 			SecretKey: cfg.RocketmqSecretKey,
 		}))
+	}
+
+	//options = append(options, producer.WithRetry(_rocketRetry))
+
+	if cfg.RockmqSelect == 0 {
+		options = append(options, producer.WithQueueSelector(producer.NewHashQueueSelector()))
 	}
 
 	producer, _ := rocketmq.NewProducer(options...)
@@ -117,6 +124,8 @@ func (s *RocketEndpoint) Consume(from model.PosRequest, rows []*model.RowRequest
 
 	//一条一条发？
 	for _, item := range ms {
+		//hash add sharekey
+
 		_, err := s.client.SendSync(context.Background(), item)
 		if err != nil {
 			logs.Errorf("rockmq SendSync err:%v", err)
@@ -225,12 +234,19 @@ func (s *RocketEndpoint) buildMessages(req *model.RowRequest, rule *global.Rule)
 		return nil, errors.Errorf("lua 脚本执行失败 : %s ", err)
 	}
 
+	keyStr := "id"
+	if rule.Key != "" {
+		keyStr = rule.Key
+	}
+	shardingKey := fmt.Sprintf("%v", kvm[keyStr])
+
 	var ms []*primitive.Message
 	for _, resp := range ls {
 		m := &primitive.Message{
 			Topic: resp.Topic,
 			Body:  resp.ByteArray,
 		}
+		m.WithShardingKey(shardingKey)
 		logs.Infof("topic: %s, message: %s", m.Topic, string(m.Body))
 		ms = append(ms, m)
 	}
@@ -253,6 +269,14 @@ func (s *RocketEndpoint) buildMessage(req *model.RowRequest, rule *global.Rule) 
 		resp.Old = oldRowMap(req, rule, false)
 	}
 
+	keyStr := "id"
+	if rule.Key != "" {
+		keyStr = rule.Key
+	}
+	shardingKey := fmt.Sprintf("%v", kvm[keyStr])
+
+	logs.Infof("shardingKey:%v", shardingKey)
+
 	body, err := json.Marshal(resp)
 	if err != nil {
 		return nil, err
@@ -262,6 +286,8 @@ func (s *RocketEndpoint) buildMessage(req *model.RowRequest, rule *global.Rule) 
 		Topic: rule.RocketmqTopic,
 		Body:  body,
 	}
+
+	m.WithShardingKey(shardingKey)
 
 	logs.Infof("topic: %s, message: %s", m.Topic, string(m.Body))
 

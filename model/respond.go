@@ -33,6 +33,7 @@ type MQRespond struct {
 	Old       interface{} `json:"old,omitempty"`
 	Data      interface{} `json:"data"`
 	ByteArray []byte      `json:"-"`
+	//Key       string      `json:"-"`
 }
 
 type ESRespond struct {

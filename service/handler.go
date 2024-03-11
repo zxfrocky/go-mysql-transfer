@@ -103,7 +103,7 @@ func (s *handler) OnRow(e *canal.RowsEvent) error {
 	if !global.RuleInsExist(ruleKey) {
 		return nil
 	}
-
+	logs.Infof("header OnRow ruleKey:%v ", ruleKey)
 	var requests []*model.RowRequest
 	if e.Action != canal.UpdateAction {
 		// 定长分配

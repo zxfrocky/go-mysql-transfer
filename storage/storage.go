@@ -171,12 +171,12 @@ func initEtcd() error {
 }
 
 func initFilePosStorage() error {
-	blotStorePath := filepath.Join(global.Cfg().DataDir, _filePath)
-	if err := files.MkdirIfNecessary(blotStorePath); err != nil {
-		return errors.New(fmt.Sprintf("create boltdb store : %s", err.Error()))
+	fileStorePath := filepath.Join(global.Cfg().DataDir, _filePath)
+	if err := files.MkdirIfNecessary(fileStorePath); err != nil {
+		return errors.New(fmt.Sprintf("create filedb store : %s", err.Error()))
 	}
 
-	boltFilePath := filepath.Join(blotStorePath, _fileName)
+	boltFilePath := filepath.Join(fileStorePath, _fileName)
 	file, err := os.OpenFile(boltFilePath, os.O_RDWR|os.O_CREATE, _fileMode)
 	if err != nil {
 		return errors.New(fmt.Sprintf("open file: %s", err.Error()))
